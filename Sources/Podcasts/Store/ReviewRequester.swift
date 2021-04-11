@@ -124,8 +124,7 @@ class ReviewRequester {
       return false
     }
     
-    rateIncentiveTimeout = setTimeout(
-      delay: .seconds(2), queue: .global(), handler: reviewBlock)
+    DispatchQueue.global().asyncAfter(deadline: .now() + .seconds(2), execute: reviewBlock)
     
     return true
   }

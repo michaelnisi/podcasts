@@ -1022,7 +1022,7 @@ extension UserClient {
 
 extension UserClient: UserSyncing {
   
-  var isAccountStatusKnown: Bool {
+  public var isAccountStatusKnown: Bool {
     return accountStatus != nil
   }
   
@@ -1085,7 +1085,7 @@ extension UserClient: UserSyncing {
     }
   }
 
-  func push(completionHandler: @escaping (_ error: Error?) -> Void) {
+  public func push(completionHandler: @escaping (_ error: Error?) -> Void) {
     queue.addOperation {
       os_log("pushing to iCloud", log: log, type: .info)
       
@@ -1180,7 +1180,7 @@ extension UserClient: UserSyncing {
     }
   }
   
-  func pull(completionHandler:
+  public func pull(completionHandler:
     @escaping (_ newData: Bool, _ error: Error?) -> Void) {
     queue.addOperation {
       os_log("pulling from iCloud", log: log, type: .info)
@@ -1243,7 +1243,7 @@ extension UserClient: UserSyncing {
     }
   }
   
-  func resetAccountStatus() {
+  public func resetAccountStatus() {
     accountStatus = nil
   }
 }

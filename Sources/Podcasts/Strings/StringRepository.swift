@@ -13,7 +13,7 @@ import HTMLAttributor
 
 private let log = OSLog.disabled
 
-private struct SummaryAttributes {
+public struct SummaryAttributes {
 
   static var p: NSParagraphStyle = {
     var p = NSMutableParagraphStyle()
@@ -46,12 +46,12 @@ private struct SummaryAttributes {
 }
 
 /// Parses feeds and entries into attributed strings.
-private struct Summary<Item> {
+public struct Summary<Item> {
   let item: Item
   let items: NSCache<NSString, NSAttributedString>
   let attributes: SummaryAttributes
 
-  func attribute(summary: String?) -> NSAttributedString {
+  public func attribute(summary: String?) -> NSAttributedString {
     let html = HTMLAttributor()
 
     os_log("attributing: %@",
@@ -84,7 +84,7 @@ private struct Summary<Item> {
 
 extension Summary where Item: Summarizable {
 
-  var attributedString: NSAttributedString {
+  public var attributedString: NSAttributedString {
     if let cached = items.object(forKey: item.guid as NSString) {
       return cached
     }
@@ -111,11 +111,11 @@ extension Summary where Item: Summarizable {
 ///
 /// Why wouldn’t this be an instance, referenced from Podest, like
 /// everything else? For localisation it probably would, no?
-class StringRepository {
+public class StringRepository {
 
   private static var summaryAttributes = SummaryAttributes()
 
-  static func purge() {
+  public static func purge() {
     durations.removeAllObjects()
     summaries.removeAllObjects()
     episodeCellSubtitles.removeAllObjects()
@@ -137,7 +137,7 @@ extension StringRepository {
   }()
 
   /// Returns an attributed summary with headline.
-  static func makeSummaryWithHeadline(feed: Feed) -> NSAttributedString {
+  public static func makeSummaryWithHeadline(feed: Feed) -> NSAttributedString {
     return Summary<Feed>(
       item: feed,
       items: summaries,
@@ -146,7 +146,7 @@ extension StringRepository {
   }
 
   /// Returns an attributed summary with headline.
-  static func makeSummaryWithHeadline(entry: Entry) -> NSAttributedString {
+  public static func makeSummaryWithHeadline(entry: Entry) -> NSAttributedString {
     return Summary<Entry>(
       item: entry,
       items: summaries,
@@ -173,7 +173,7 @@ extension StringRepository {
     return df
   }()
 
-  static func string(from date: Date) -> String {
+  public static func string(from date: Date) -> String {
     return naturalDateFormatter.string(from: date)
   }
 
@@ -185,7 +185,7 @@ extension StringRepository {
     return c
   }()
 
-  static func string(from seconds: Int?) -> String? {
+  public static func string(from seconds: Int?) -> String? {
     guard let d = seconds, seconds != 0 else {
       return nil
     }
@@ -230,7 +230,7 @@ extension StringRepository {
 
 extension StringRepository {
 
-  static var feedCellSubtitles: NSCache<NSNumber, NSString> = {
+  public static var feedCellSubtitles: NSCache<NSNumber, NSString> = {
     let c = NSCache<NSNumber, NSString>()
 
     c.countLimit = 1024
@@ -238,7 +238,7 @@ extension StringRepository {
     return c
   }()
 
-  static func feedCellSubtitle(for feed: Feed) -> String {
+  public static func feedCellSubtitle(for feed: Feed) -> String {
     let key = feed.hashValue as NSNumber
 
     guard let subtitle = feedCellSubtitles.object(forKey: key) else {
@@ -277,7 +277,7 @@ extension StringRepository {
   ///
   /// This code can run pretty hot. Designed for table view cells, these are
   /// simple strings, cached for reuse.
-  static func episodeCellSubtitle(for entry: Entry) -> String {
+  public static func episodeCellSubtitle(for entry: Entry) -> String {
     let key = entry.hashValue as NSNumber
 
     if let subtitle = episodeCellSubtitles.object(forKey: key) {
@@ -330,7 +330,7 @@ extension StringRepository {
 
 extension StringRepository {
   
-  static func emptyFeed(titled: String? = nil) -> NSAttributedString {
+  public static func emptyFeed(titled: String? = nil) -> NSAttributedString {
     let bold: [NSAttributedString.Key : Any] = [
       .font: UIFont.preferredFont(forTextStyle: .headline)
     ]
@@ -349,7 +349,7 @@ extension StringRepository {
     return a
   }
   
-  static func noEpisodeSelected() -> NSAttributedString {
+  public static func noEpisodeSelected() -> NSAttributedString {
     let headline: [NSAttributedString.Key : Any] = [
       .font: UIFont.preferredFont(forTextStyle: .title2)
     ]
@@ -381,7 +381,7 @@ extension StringRepository {
     return a
   }
   
-  static let emptyQueue: NSAttributedString = makeMessage(
+  public static let emptyQueue: NSAttributedString = makeMessage(
     title: "No Episodes",
     hint: """
     Swipe down to refresh or search to explore. \
@@ -389,22 +389,22 @@ extension StringRepository {
     """
   )
 
-  static let loadingPodcast: NSAttributedString = makeMessage(
+  public static let loadingPodcast: NSAttributedString = makeMessage(
     title: "Loading",
     hint: "Please wait for your podcast to load."
   )
 
-  static let loadingEpisodes: NSAttributedString = makeMessage(
+  public static let loadingEpisodes: NSAttributedString = makeMessage(
     title: "Loading",
     hint: "Please wait for your episodes to load."
   )
 
-  static let loadingQueue: NSAttributedString = makeMessage(
+  public static let loadingQueue: NSAttributedString = makeMessage(
     title: "Loading",
     hint: "Please wait while your Queue is being synchronized."
   )
   
-  static func noEpisode(with title: String) -> NSAttributedString {
+  public static func noEpisode(with title: String) -> NSAttributedString {
     let bold: [NSAttributedString.Key : Any] = [
       .font: UIFont.preferredFont(forTextStyle: .headline)
     ]
@@ -419,28 +419,28 @@ extension StringRepository {
     return a
   }
   
-  static func noResult(for term: String) -> NSAttributedString {
+  public static func noResult(for term: String) -> NSAttributedString {
     let title = "No Results"
     let hint = "We didn’t find anything for “\(term)”. Try something else."
 
     return makeMessage(title: title, hint: hint)
   }
   
-  static var serviceUnavailable: NSAttributedString {
+  public static var serviceUnavailable: NSAttributedString {
     let title = "Service Unavailable"
     let hint = "Please try again later."
 
     return StringRepository.makeMessage(title: title, hint: hint)
   }
 
-  static var offline: NSAttributedString {
+  public static var offline: NSAttributedString {
     let title = "You’re Offline"
     let hint = "Turn off Airplane Mode or connect to Wi-Fi."
     
     return makeMessage(title: title, hint: hint)
   }
   
-  static func unknown(_ error: Error) -> NSAttributedString {
+  public static func unknown(_ error: Error) -> NSAttributedString {
     let title = "I’m Sorry"
     let hint = error.localizedDescription
 
@@ -461,7 +461,7 @@ extension StringRepository {
   ///   - error: The error from which to produce a message.
   ///
   /// - Returns: An error message or `nil` if the error can be ignored.
-  static func message(describing error: Error) -> NSAttributedString? {
+  public static func message(describing error: Error) -> NSAttributedString? {
     switch error {
     case FeedKitError.cancelledByUser:
       return nil

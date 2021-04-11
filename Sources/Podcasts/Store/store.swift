@@ -12,7 +12,7 @@ import StoreKit
 // MARK: - Dependencies
 
 /// Plain Strings to identify products for flexibility.
-typealias ProductIdentifier = String
+public typealias ProductIdentifier = String
 
 /// A locally known product, stored in the local JSON file `products.json`.
 struct LocalProduct: Codable {
@@ -45,14 +45,6 @@ struct PodestReceipt: Codable {
     self.transactionIdentifier = transactionIdentifier
     self.transactionDate = transactionDate
   }
-}
-
-/// Trade representative contact information.
-struct Contact: Decodable {
-  let email: String
-  let github: String
-  let privacy: String
-  let review: String
 }
 
 /// The payment queue proxy allows swapping out the queue for testing.
@@ -91,7 +83,7 @@ extension Paying {
 
 /// Enumerates possible presentation layer error types, grouping StoreKit and
 /// other errors into five simplified buckets.
-enum ShoppingError: Error {
+public enum ShoppingError: Error {
   case invalidProduct(String?)
   case offline
   case serviceUnavailable
@@ -154,7 +146,7 @@ enum ShoppingError: Error {
 }
 
 /// Get notified when accessiblity to the store changes.
-protocol StoreAccessDelegate: class {
+public protocol StoreAccessDelegate: class {
 
   /// Pinged if the store should be shown or hidden.
   func store(_ store: Shopping, isAccessible: Bool)
@@ -171,7 +163,7 @@ protocol StoreAccessDelegate: class {
 }
 
 /// Receives shopping events.
-protocol StoreDelegate: class {
+public protocol StoreDelegate: class {
 
   /// After fetching available IAPs, this callback receives products or error.
   func store(
@@ -191,7 +183,7 @@ protocol StoreDelegate: class {
 }
 
 /// Ask users for rating and reviews.
-protocol Rating {
+public protocol Rating {
 
   /// Requests user to rate the app if appropriate.
   func considerReview()
@@ -208,7 +200,7 @@ protocol Rating {
 }
 
 /// Checking user status.
-protocol Expiring {
+public protocol Expiring {
 
   /// Returns `true` if the trial period has been exceeded, `false` is returned
   /// within the trial period or if a valid subscription receipt is present.
@@ -218,7 +210,7 @@ protocol Expiring {
 }
 
 /// A set of methods to offer in-app purchases.
-protocol Shopping: SKPaymentTransactionObserver, Rating, Expiring {
+public protocol Shopping: SKPaymentTransactionObserver, Rating, Expiring {
 
   /// Clients use this delegate to receive callbacks from the store.
   var delegate: StoreDelegate? { get set }

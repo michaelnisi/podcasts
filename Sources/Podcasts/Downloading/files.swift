@@ -11,7 +11,7 @@ import FileProxy
 
 /// `Downloading` provides file facilities. For the most part, this API should
 /// not be used from the main queue, it might trap.
-protocol Downloading: FileProxyDelegate {
+public protocol Downloading: FileProxyDelegate {
   
   /// Requests opportunistic background download of `url` if necessary.
   func preload(url: URL)

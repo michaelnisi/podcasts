@@ -22,10 +22,10 @@ enum SyncError: Error {
 
 /// The private user database is sectionend into three zones, library for
 /// subscriptions, queue for enqueued items, and log for history.
-struct UserDB {
+public struct UserDB {
   static var containerIdentifier = "iCloud.ink.codes.podest"
   
-  static var subscriptionID = "user-changes"
+  public static var subscriptionID = "user-changes"
   static var subscriptionKey =
   "\(UserDB.containerIdentifier).\(UserDB.subscriptionID)"
   
@@ -89,7 +89,7 @@ enum UserRecordType: String {
 }
 
 /// Synchronizes user data with iCloud, encapsulating our `CloudKit` dependency.
-protocol UserSyncing {
+public protocol UserSyncing {
   
   /// Is `true` if we know our iCloud account status.
   var isAccountStatusKnown: Bool { get }

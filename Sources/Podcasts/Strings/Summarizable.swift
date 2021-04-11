@@ -11,7 +11,7 @@ import FeedKit
 
 /// Types that conform to the `Summarizable` protocol are typically entities
 /// that can be displayed as a single text paragraph.
-protocol Summarizable: Hashable {
+public protocol Summarizable: Hashable {
   var summary: String? { get }
   var title: String { get }
   var author: String? { get }
@@ -23,9 +23,8 @@ protocol Summarizable: Hashable {
 extension Entry: Summarizable {}
 
 extension Feed: Summarizable {
-  
-  var guid: String {
-    return self.url // Anything unique for NSCache.
+  public var guid: String {
+    self.url // Anything unique for NSCache.
   }
 }
 

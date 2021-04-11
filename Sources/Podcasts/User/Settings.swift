@@ -12,7 +12,7 @@ import Foundation
 ///
 /// For preventing key collisions, all user defaults keys should be listed here,
 /// which they aren’t at the moment, I’m looking at you, sync.
-extension UserDefaults {
+public extension UserDefaults {
 
   static var automaticDownloadsKey = "automaticDownloads"
   static var discretionaryDownloads = "discretionaryDownloads"
@@ -64,27 +64,27 @@ extension UserDefaults {
 }
 
 /// Additional **development** settings may override user defaults.
-struct Settings {
+public struct Settings {
 
   /// Despite disabling iCloud in Settings.app makes the better, more realistic,
   /// environment, this argument can be used during development. Passing `true`
   /// produces a NOP iCloud client at initialization time.
   ///
   /// Disabling sync also disables preloading media files.
-  let noSync: Bool
+  public let noSync: Bool
 
   /// Removes local caches for starting over.
-  let flush: Bool
+  public let flush: Bool
 
   /// Prevents automatic downloading of media files. Good for quick sessions in
   /// simulators, where background downloads may be pointless.
-  let noDownloading: Bool
+  public let noDownloading: Bool
 
   /// Overrides allowed interface orientations, allowing all but upside down.
-  let allButUpsideDown: Bool
+  public let allButUpsideDown: Bool
 
   /// Removes IAP receipts.
-  let removeReceipts: Bool
+  public let removeReceipts: Bool
 
   /// Creates new settings from process info arguments.
   init (arguments: [String]) {
