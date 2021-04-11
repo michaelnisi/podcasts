@@ -25,6 +25,7 @@ let package = Package(
       dependencies: ["FeedKit", "Playback", "FileProxy", "HTMLAttributor"]),
     .testTarget(
       name: "PodcastsTests",
-      dependencies: ["Podcasts"]),
+      dependencies: ["Podcasts"],
+      resources: [.process("Resources")])
   ]
 )
