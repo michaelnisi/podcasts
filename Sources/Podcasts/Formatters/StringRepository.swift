@@ -50,6 +50,12 @@ public struct Summary<Item> {
   let item: Item
   let items: NSCache<NSString, NSAttributedString>
   let attributes: SummaryAttributes
+  
+  public init(item: Item, items: NSCache<NSString, NSAttributedString>, attributes: SummaryAttributes) {
+    self.item = item
+    self.items = items
+    self.attributes = attributes
+  }
 
   public func attribute(summary: String?) -> NSAttributedString {
     let html = HTMLAttributor()
@@ -113,7 +119,7 @@ extension Summary where Item: Summarizable {
 /// everything else? For localisation it probably would, no?
 public class StringRepository {
 
-  private static var summaryAttributes = SummaryAttributes()
+  public static var summaryAttributes = SummaryAttributes()
 
   public static func purge() {
     durations.removeAllObjects()
@@ -128,7 +134,7 @@ public class StringRepository {
 extension StringRepository {
 
   /// Cached summaries of feeds and entries.
-  private static var summaries: NSCache<NSString, NSAttributedString> = {
+  public static var summaries: NSCache<NSString, NSAttributedString> = {
     let cache = NSCache<NSString, NSAttributedString>()
 
     cache.countLimit = 512
