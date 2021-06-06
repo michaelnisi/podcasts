@@ -13,7 +13,7 @@ import FeedKit
 import Playback
 
 let conf: Configuration = {
-  return try! Configuration(url: Bundle.main.url(forResource: "config", withExtension: "json")!)
+  try! Configuration(url: Bundle.main.url(forResource: "config", withExtension: "json")!)
 }()
 
 public let settings: Settings = conf.settings
@@ -26,8 +26,7 @@ public let feedCaching: Caching = conf.feedCache
 public let iCloud: UserSyncing = conf.makeUserClient()
 public let store: Shopping = try! conf.makeStore()
 public let files: Downloading = conf.makeFileRepo()
-public let playback = PlaybackSession<Entry>(times: TimeRepository.shared)
-public let player = Player(userQueue: userQueue)
-
 public var userLibrary: Subscribing = conf.user
 public var userQueue: Queueing = conf.user
+public let playback = PlaybackSession<Entry>(times: TimeRepository.shared)
+public let player = NowPlaying(playback: playback, userQueue: userQueue)
