@@ -12,9 +12,9 @@ import Combine
 import FeedKit
 
 struct PlaybackReducer {
-  let factory: NowPlayingFactory
+  let factory: PlayerFactory
   
-  func reducer(state: NowPlaying.State, action: PlaybackState<Entry>) -> AnyPublisher<NowPlaying.State, Never> {
+  func reducer(state: Playing.State, action: PlaybackState<Entry>) -> AnyPublisher<Playing.State, Never> {
     switch state {
     case .full:
       switch action {
@@ -38,14 +38,16 @@ struct PlaybackReducer {
         return Just(.video(entry, player))
           .eraseToAnyPublisher()
       }
-    case .mini(_, _):
+    case let .mini(entry, player):
       switch action {
       case .inactive(_):
         return Just(.none)
           .eraseToAnyPublisher()
         
       case .paused(_, _, _):
-        return Just(.none)
+        player.configure(item: player.item, isPlaying: false)
+        
+        return Just(.mini(entry, player))
           .eraseToAnyPublisher()
         
       case .preparing(_, _):
@@ -53,7 +55,7 @@ struct PlaybackReducer {
           .eraseToAnyPublisher()
         
       case let .listening(entry, asset):
-        return factory.transformListening(entry: entry, asset: asset)
+        return factory.transformListeningMini(entry: entry, asset: asset, player: player)
           .eraseToAnyPublisher()
         
       case let .viewing(entry, player):
@@ -97,7 +99,7 @@ struct PlaybackReducer {
           .eraseToAnyPublisher()
         
       case let .listening(entry, asset):
-        return factory.transformListening(entry: entry, asset: asset)
+        return factory.transformListeningMini(entry: entry, asset: asset)
           .eraseToAnyPublisher()
         
       case let .viewing(entry, player):

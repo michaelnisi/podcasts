@@ -15,7 +15,7 @@ import SwiftUI
 
 // MARK: - Images
 
-struct NowPlayingFactory {
+struct PlayerFactory {
   var fallback: UIImage {
     UIImage()
   }
@@ -29,9 +29,9 @@ struct NowPlayingFactory {
 
 // MARK: - Full
 
-extension NowPlayingFactory {
+extension PlayerFactory {
   func makePlayerItem(entry: Entry, image: UIImage) -> Epic.Player.Item {
-    Player.Item(
+    Epic.Player.Item(
       title: entry.title,
       subtitle: entry.feedTitle ?? "Some Podcast",
       colors: Colors(image: image),
@@ -39,7 +39,7 @@ extension NowPlayingFactory {
     )
   }
   
-  func transformListening(entry: Entry, asset: AssetState) -> AnyPublisher<NowPlaying.State, Never> {
+  func transformListening(entry: Entry, asset: AssetState) -> AnyPublisher<Playing.State, Never> {
     loadImage(representing: entry, at: CGSize(width: 600, height: 600))
       .map { image in
         let item = self.makePlayerItem(entry: entry, image: image)
@@ -59,14 +59,37 @@ extension NowPlayingFactory {
 
 // MARK: - Mini
 
-extension NowPlayingFactory {
-  func makeMiniPlayerItem(entry: Entry) -> MiniPlayer.Item {
-    MiniPlayer.Item(title: entry.title)
+extension PlayerFactory {
+  func makeMiniPlayerItem(entry: Entry, image: UIImage) -> MiniPlayer.Item {
+    MiniPlayer.Item(title: entry.title, image: image)
+  }
+  
+  func transformListeningMini(entry: Entry, asset: AssetState, player: MiniPlayer? = nil) -> AnyPublisher<Playing.State, Never> {
+    loadImage(representing: entry, at: CGSize(width: 600, height: 600))
+      .map { image in
+        let player = player ?? Epic.MiniPlayer()
+        let item = self.makeMiniPlayerItem(entry: entry, image: image)
+        
+        player.actionHandler = { action in
+          switch action {
+          case .play:
+            Podcasts.player.setItem(matching: EntryLocator(entry: entry))
+          
+          case .pause:
+            Podcasts.player.pause()
+          }
+        }
+        
+        player.configure(item: item, isPlaying: asset.isPlaying)
+        
+        return .mini(entry, player)
+      }
+      .eraseToAnyPublisher()
   }
 }
 
 // MARK: - Video
 
-extension NowPlaying {
+extension Playing {
 
 }
