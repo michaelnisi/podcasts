@@ -59,6 +59,12 @@ extension PlayerFactory {
 
 // MARK: - Mini
 
+private extension AssetState {
+  var playback: Epic.PlaybackState {
+    isPlaying ? .playing : .paused
+  }
+}
+
 extension PlayerFactory {
   func makeMiniPlayerItem(entry: Entry, image: UIImage) -> MiniPlayer.Item {
     MiniPlayer.Item(title: entry.title, image: image)
@@ -80,7 +86,7 @@ extension PlayerFactory {
           }
         }
         
-        player.configure(item: item, isPlaying: asset.isPlaying)
+        player.configure(item: item, playback: asset.playback)
         
         return .mini(entry, player)
       }

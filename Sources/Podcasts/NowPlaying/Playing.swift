@@ -14,7 +14,8 @@ import Epic
 import Combine
 import AVFoundation
 
-private let logger = Logger(subsystem: "ink.codes.podcasts", category: "Playing")
+private
+let logger = Logger(subsystem: "ink.codes.podcasts", category: "Playing")
 
 extension Entry: Playable {
   public func makePlaybackItem() -> PlaybackItem {
@@ -77,13 +78,13 @@ public class Playing {
 // MARK: - Setting the current item
 
 extension Playing {
-  func skipTo(_ entry: Entry) -> Future<Entry, Never> {
+  private func skipTo(_ entry: Entry) -> Future<Entry, Never> {
     Future { promise in
       promise(.success(entry))
     }
   }
   
-  func enqueue(_ entry: Entry?) -> Future<Entry, Never> {
+  private func enqueue(_ entry: Entry?) -> Future<Entry, Never> {
     Future { promise in
       Podcasts.userQueue.enqueue(entries: [entry!]) { enqueued, error in
         if let er = error {
@@ -95,15 +96,15 @@ extension Playing {
     }
   }
   
-  func findEntry(matching locator: EntryLocator) -> Future<[Entry], Never> {
+  private func findEntry(matching locator: EntryLocator) -> Future<[Entry], Never> {
     Future { promise in
       var acc = [Entry]()
       
       Podcasts.browser.entries([locator], entriesBlock: { error, entries in
         acc += entries
-      }, entriesCompletionBlock: { error in
+      }) { error in
         promise(.success(acc))
-      })
+      }
     }
   }
   
@@ -136,15 +137,19 @@ public extension Playing {
 
 extension Playing {
   func forward() {
-    
+    // TODO
   }
   
   func backward() {
-    
+    // TODO
   }
-  
+}
+
+// MARK: - Scrubbing
+
+extension Playing {
   func scrub() {
-    
+    // TODO
   }
 }
 

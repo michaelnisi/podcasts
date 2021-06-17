@@ -38,6 +38,7 @@ struct PlaybackReducer {
         return Just(.video(entry, player))
           .eraseToAnyPublisher()
       }
+      
     case let .mini(entry, player):
       switch action {
       case .inactive(_):
@@ -45,7 +46,7 @@ struct PlaybackReducer {
           .eraseToAnyPublisher()
         
       case .paused(_, _, _):
-        player.configure(item: player.item, isPlaying: false)
+        player.configure(item: player.item, playback: .paused)
         
         return Just(.mini(entry, player))
           .eraseToAnyPublisher()
@@ -62,6 +63,7 @@ struct PlaybackReducer {
         return Just(.video(entry, player))
           .eraseToAnyPublisher()
       }
+      
     case .video(_, _):
       switch action {
       case .inactive(_):
@@ -84,6 +86,7 @@ struct PlaybackReducer {
         return Just(.video(entry, player))
           .eraseToAnyPublisher()
       }
+      
     case .none:
       switch action {
       case .inactive(_):
