@@ -1,6 +1,6 @@
 //
 //  Podcasts.swift
-//  Podest
+//  Podcasts
 //
 //  Podcast App Core
 //

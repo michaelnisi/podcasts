@@ -39,11 +39,11 @@ extension PlayerFactory {
     )
   }
   
-  func transformListening(entry: Entry, asset: AssetState) -> AnyPublisher<Playing.State, Never> {
+  func transformListening(entry: Entry, asset: AssetState, player: Epic.Player? = nil) -> AnyPublisher<Playing.State, Never> {
     loadImage(representing: entry, at: CGSize(width: 600, height: 600))
       .map { image in
         let item = self.makePlayerItem(entry: entry, image: image)
-        let player = Epic.Player(
+        let player = player ?? Epic.Player(
           item: item,
           isPlaying: asset.isPlaying,
           isForwardable: true,
@@ -51,7 +51,26 @@ extension PlayerFactory {
           trackTime: asset.time
         )
         
-        return .full(entry, player)
+        player.actionHandler = { action in
+          switch action {
+          case .play:
+            Podcasts.player.setItem(matching: EntryLocator(entry: entry))
+          
+          case .pause:
+            Podcasts.player.pause()
+            
+          case .forward:
+            break
+            
+          case .backward:
+            break
+            
+          case .close:
+            break
+          }
+        }
+        
+        return .full(entry, asset, player)
       }
       .eraseToAnyPublisher()
   }
@@ -83,12 +102,15 @@ extension PlayerFactory {
           
           case .pause:
             Podcasts.player.pause()
+            
+          case .showPlayer:
+            Podcasts.player.showPlayer()
           }
         }
         
         player.configure(item: item, playback: asset.playback)
         
-        return .mini(entry, player)
+        return .mini(entry, asset, player)
       }
       .eraseToAnyPublisher()
   }

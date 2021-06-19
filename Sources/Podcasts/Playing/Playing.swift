@@ -1,5 +1,5 @@
 //
-//  NowPlaying.swift
+//  Playing.swift
 //  Podest
 //
 //  Created by Michael Nisi on 22.05.21.
@@ -13,9 +13,9 @@ import os.log
 import Epic
 import Combine
 import AVFoundation
+import FileProxy
 
-private
-let logger = Logger(subsystem: "ink.codes.podcasts", category: "Playing")
+private let logger = Logger(subsystem: "ink.codes.podcasts", category: "Playing")
 
 extension Entry: Playable {
   public func makePlaybackItem() -> PlaybackItem {
@@ -30,15 +30,14 @@ extension Entry: Playable {
   }
 }
 
-/// NowPlaying publishes the player state.
 public class Playing {
   public enum State: CustomStringConvertible {
     public var description: String {
       switch self {
-      case let .full(entry, _):
+      case let .full(entry, _, _):
         return "full: \(entry.description)"
         
-      case let .mini(entry, _):
+      case let .mini(entry, _, _):
         return "mini: \(entry.description)"
         
       case let .video(entry, _):
@@ -49,8 +48,8 @@ public class Playing {
       }
     }
     
-    case full(Entry, Epic.Player)
-    case mini(Entry, MiniPlayer)
+    case full(Entry, AssetState, Epic.Player)
+    case mini(Entry, AssetState, MiniPlayer)
     case video(Entry, AVPlayer)
     case none
   }
@@ -60,20 +59,34 @@ public class Playing {
     case none
   }
   
+  enum PlayerType {
+    case full, video, mini, none
+  }
+  
+  struct Action {
+    let event: Playback.PlaybackState<Entry>
+    let playerType: PlayerType
+  }
+  
   @Published public private (set) var state: State = .none
   @Published public private (set) var message: Message = .none
+  @Published private var playerType: PlayerType = .none
   
   private let playbackReducer = PlaybackReducer(factory: PlayerFactory())
   private var settingItem: AnyCancellable?
   
   init() {
+    Files.install()
+    
     Podcasts.playback.$state
+      .combineLatest($playerType)
       .receive(on: DispatchQueue.main)
-      .map { (self.state, $0) }
+      .map { (self.state, .init(event: $0, playerType: $1)) }
       .flatMap(playbackReducer.reducer)
       .assign(to: &$state)
   }
 }
+
 
 // MARK: - Setting the current item
 
@@ -153,3 +166,14 @@ extension Playing {
   }
 }
 
+// MARK: - Showing and hiding the audio player
+
+extension Playing {
+  func showPlayer() {
+    playerType = .full
+  }
+  
+  func hidePlayer() {
+    playerType = .mini
+  }
+}
