@@ -567,6 +567,10 @@ public class UserClient {
       case .restricted:
         os_log("account status: %@", log: log, type: .info, "restricted")
         cb(SyncError.notAvailable)
+          
+      case .temporarilyUnavailable:
+        os_log("account status: %@", log: log, type: .info, "temporarily unavailable")
+        cb(SyncError.notAvailable)
 
       @unknown default:
         fatalError("unknown case in switch: \(accountStatus)")

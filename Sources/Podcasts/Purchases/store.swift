@@ -100,7 +100,8 @@ public enum ShoppingError: Error {
            .paymentNotAllowed,
            .privacyAcknowledgementRequired,
            .unauthorizedRequestData,
-           .unsupportedPlatform:
+           .unsupportedPlatform,
+           .overlayPresentedInBackgroundScene:
         self = .failed
         
       case .cloudServicePermissionDenied,
@@ -123,7 +124,7 @@ public enum ShoppingError: Error {
            .overlayInvalidConfiguration,
            .invalidSignature:
         self = .invalidProduct(productIdentifier)
-        
+          
       @unknown default:
         fatalError("unknown case in switch: \(skError.code)")
       }
@@ -146,7 +147,7 @@ public enum ShoppingError: Error {
 }
 
 /// Get notified when accessiblity to the store changes.
-public protocol StoreAccessDelegate: class {
+public protocol StoreAccessDelegate: AnyObject {
 
   /// Pinged if the store should be shown or hidden.
   func store(_ store: Shopping, isAccessible: Bool)
@@ -163,7 +164,7 @@ public protocol StoreAccessDelegate: class {
 }
 
 /// Receives shopping events.
-public protocol StoreDelegate: class {
+public protocol StoreDelegate: AnyObject {
 
   /// After fetching available IAPs, this callback receives products or error.
   func store(

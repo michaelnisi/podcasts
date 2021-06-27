@@ -39,7 +39,7 @@ extension PlayerFactory {
     )
   }
   
-  func transformListening(entry: Entry, asset: AssetState, player: Epic.Player? = nil) -> AnyPublisher<Playing.State, Never> {
+  func transformListening(entry: Entry, asset: AssetState, player: Epic.Player? = nil) -> AnyPublisher<PlaybackController.State, Never> {
     loadImage(representing: entry, at: CGSize(width: 600, height: 600))
       .map { image in
         let item = self.makePlayerItem(entry: entry, image: image)
@@ -60,13 +60,13 @@ extension PlayerFactory {
             Podcasts.player.pause()
             
           case .forward:
-            break
+            Podcasts.player.forward()
             
           case .backward:
-            break
+            Podcasts.player.backward()
             
           case .close:
-            break
+            Podcasts.player.hidePlayer()
           }
         }
         
@@ -89,7 +89,7 @@ extension PlayerFactory {
     MiniPlayer.Item(title: entry.title, image: image)
   }
   
-  func transformListeningMini(entry: Entry, asset: AssetState, player: MiniPlayer? = nil) -> AnyPublisher<Playing.State, Never> {
+  func transformListeningMini(entry: Entry, asset: AssetState, player: MiniPlayer? = nil) -> AnyPublisher<PlaybackController.State, Never> {
     loadImage(representing: entry, at: CGSize(width: 600, height: 600))
       .map { image in
         let player = player ?? Epic.MiniPlayer()
@@ -118,6 +118,6 @@ extension PlayerFactory {
 
 // MARK: - Video
 
-extension Playing {
+extension PlaybackController {
 
 }

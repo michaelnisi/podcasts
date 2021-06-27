@@ -30,7 +30,7 @@ extension Entry: Playable {
   }
 }
 
-public class Playing {
+public class PlaybackController {
   public enum State: CustomStringConvertible {
     public var description: String {
       switch self {
@@ -74,9 +74,12 @@ public class Playing {
   
   private let playbackReducer = PlaybackReducer(factory: PlayerFactory())
   private var settingItem: AnyCancellable?
-  
+
   init() {
     Files.install()
+    
+    Podcasts.playback.nextItem = Podcasts.userQueue.next
+    Podcasts.playback.previousItem = Podcasts.userQueue.previous
     
     Podcasts.playback.$state
       .combineLatest($playerType)
@@ -90,7 +93,7 @@ public class Playing {
 
 // MARK: - Setting the current item
 
-extension Playing {
+extension PlaybackController {
   private func skipTo(_ entry: Entry) -> Future<Entry, Never> {
     Future { promise in
       promise(.success(entry))
@@ -136,7 +139,7 @@ extension Playing {
 
 // MARK: - Pausing
 
-public extension Playing {  
+public extension PlaybackController {
   func pause() {
     guard Podcasts.playback.currentItem != nil else {
       return
@@ -148,19 +151,19 @@ public extension Playing {
 
 // MARK: - Skipping
 
-extension Playing {
+extension PlaybackController {
   func forward() {
-    // TODO
+    Podcasts.playback.forward()
   }
   
   func backward() {
-    // TODO
+    Podcasts.playback.backward()
   }
 }
 
 // MARK: - Scrubbing
 
-extension Playing {
+extension PlaybackController {
   func scrub() {
     // TODO
   }
@@ -168,7 +171,7 @@ extension Playing {
 
 // MARK: - Showing and hiding the audio player
 
-extension Playing {
+extension PlaybackController {
   func showPlayer() {
     playerType = .full
   }

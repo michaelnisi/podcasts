@@ -29,4 +29,4 @@ public let files: Downloading = conf.makeFileRepo()
 public var userLibrary: Subscribing = conf.user
 public var userQueue: Queueing = conf.user
 public let playback = PlaybackSession<Entry>(times: TimeRepository.shared)
-public let player = Playing()
+public let player = PlaybackController()

@@ -18,8 +18,7 @@ private let log = OSLog(subsystem: "ink.codes.podest", category: "PlaybackReduce
 struct PlaybackReducer {
   let factory: PlayerFactory
   
-  func reducer(state: Playing.State, action: Playing.Action) -> AnyPublisher<Playing.State, Never> {
-    os_log(.debug, log: log, "** action: %{public}@", String(describing: action))
+  func reducer(state: PlaybackController.State, action: PlaybackController.Action) -> AnyPublisher<PlaybackController.State, Never> {
     switch state {
     case let .full(entry, asset, player):
       return Full(entry: entry, asset: asset, player: player, factory: factory)

@@ -18,7 +18,7 @@ extension PlaybackReducer {
     let player: Epic.Player
     let factory: PlayerFactory
     
-    func reduce(_ action: Playing.Action) -> AnyPublisher<Playing.State, Never> {
+    func reduce(_ action: PlaybackController.Action) -> AnyPublisher<PlaybackController.State, Never> {
       switch action.event {
       case .inactive(_):
         return Just(.none)
@@ -37,7 +37,6 @@ extension PlaybackReducer {
       case let .listening(entry, asset):
         return transformListeningFor(action.playerType, entry: entry, asset: asset)
         
-        
       case let .viewing(entry, player):
         return Just(.video(entry, player))
           .eraseToAnyPublisher()
@@ -48,10 +47,10 @@ extension PlaybackReducer {
 
 private extension PlaybackReducer.Full {
   func transformListeningFor(
-    _ playerType: Playing.PlayerType,
+    _ playerType: PlaybackController.PlayerType,
     entry: Entry,
     asset: AssetState
-  ) -> AnyPublisher<Playing.State, Never>  {
+  ) -> AnyPublisher<PlaybackController.State, Never>  {
     switch playerType {
     case .full:
       return factory.transformListening(entry: entry, asset: asset)

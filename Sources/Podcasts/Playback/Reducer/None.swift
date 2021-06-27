@@ -14,7 +14,7 @@ extension PlaybackReducer {
   struct None {
     let factory: PlayerFactory
     
-    func reduce(_ action: Playing.Action) -> AnyPublisher<Playing.State, Never> {
+    func reduce(_ action: PlaybackController.Action) -> AnyPublisher<PlaybackController.State, Never> {
       switch action.event {
       case .inactive(_):
         return Just(.none)
