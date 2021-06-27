@@ -29,8 +29,19 @@ extension PlaybackReducer {
           .eraseToAnyPublisher()
         
       case let .listening(entry, asset):
-        return factory.transformListeningMini(entry: entry, asset: asset)
-          .eraseToAnyPublisher()
+        switch action.playerType {
+        case .full:
+          return factory.transformListening(entry: entry, asset: asset)
+            .eraseToAnyPublisher()
+          
+        case .mini, .none:
+          return factory.transformListeningMini(entry: entry, asset: asset)
+            .eraseToAnyPublisher()
+          
+        case .video:
+          return Just(.none)
+            .eraseToAnyPublisher()
+        }
         
       case let .viewing(entry, player):
         return Just(.video(entry, player))

@@ -43,7 +43,11 @@ extension PlayerFactory {
     loadImage(representing: entry, at: CGSize(width: 600, height: 600))
       .map { image in
         let item = self.makePlayerItem(entry: entry, image: image)
-        let player = player ?? Epic.Player(
+        
+        
+        let player = player ?? Epic.Player()
+        
+        player.configure(
           item: item,
           isPlaying: asset.isPlaying,
           isForwardable: true,

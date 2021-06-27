@@ -30,8 +30,8 @@ extension PlaybackReducer {
         return factory.transformListening(entry: entry, asset: asset!, player: player)
           .eraseToAnyPublisher()
         
-      case .preparing(_, _):
-        return Just(.none)
+      case let .preparing(entry, _):
+        return factory.transformListening(entry: entry, asset: asset, player: player)
           .eraseToAnyPublisher()
         
       case let .listening(entry, asset):
