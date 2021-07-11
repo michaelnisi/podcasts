@@ -1,6 +1,6 @@
 //
-//  Playing.swift
-//  Podest
+//  PlaybackController.swift
+//  Podcasts
 //
 //  Created by Michael Nisi on 22.05.21.
 //  Copyright © 2021 Michael Nisi. All rights reserved.
@@ -60,15 +60,18 @@ public class PlaybackController {
   }
   
   enum PlayerType {
-    case full, video, mini, none
+    case full, mini, none
   }
   
-  struct Action {
-    let event: Playback.PlaybackState<Entry>
-    let playerType: PlayerType
+  enum Action {
+    case inactive(PlayerType, PlaybackError?)
+    case paused(PlayerType, Entry, AssetState?, PlaybackError?)
+    case preparing(PlayerType, Entry, Bool)
+    case listening(PlayerType, Entry, AssetState)
+    case viewing(PlayerType, Entry, AVPlayer)
   }
   
-  @Published public private (set) var state: State = .none
+  @Published public private (set) var state: State = .none 
   @Published public private (set) var message: Message = .none
   @Published private var playerType: PlayerType = .none
   
@@ -84,7 +87,7 @@ public class PlaybackController {
     Podcasts.playback.$state
       .combineLatest($playerType)
       .receive(on: DispatchQueue.main)
-      .map { (self.state, .init(event: $0, playerType: $1)) }
+      .map { (self.state, .init(playback: $0, type: $1)) }
       .flatMap(playbackReducer.reducer)
       .assign(to: &$state)
   }

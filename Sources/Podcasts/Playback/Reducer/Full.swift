@@ -19,56 +19,36 @@ extension PlaybackReducer {
     let factory: PlayerFactory
     
     func reduce(_ action: PlaybackController.Action) -> AnyPublisher<PlaybackController.State, Never> {
-      switch action.event {
-      case .inactive(_):
+      switch action {
+      case .inactive(_, _):
         return Just(.none)
           .eraseToAnyPublisher()
         
-      case let .paused(entry, asset, error):
+      case let .paused(_, entry, asset, error):
         player.isPlaying = false
         
         return factory.transformListening(entry: entry, asset: asset!, player: player)
           .eraseToAnyPublisher()
         
-      case let .preparing(entry, _):
+      case let .preparing(_, entry, _):
         return factory.transformListening(entry: entry, asset: asset, player: player)
           .eraseToAnyPublisher()
         
-      case let .listening(entry, asset):
-        return transformListeningFor(action.playerType, entry: entry, asset: asset)
+      case let .listening(type, entry, asset):
+        switch type {
+        case .full:
+          return factory.transformListening(entry: entry, asset: asset, player: player)
+              .eraseToAnyPublisher()
+          
+        case .mini, .none:
+          return factory.transformListeningMini(entry: entry, asset: asset)
+              .eraseToAnyPublisher()
+        }
         
-      case let .viewing(entry, player):
+      case let .viewing(_, entry, player):
         return Just(.video(entry, player))
           .eraseToAnyPublisher()
       }
     }
   }
 }
-
-private extension PlaybackReducer.Full {
-  func transformListeningFor(
-    _ playerType: PlaybackController.PlayerType,
-    entry: Entry,
-    asset: AssetState
-  ) -> AnyPublisher<PlaybackController.State, Never>  {
-    switch playerType {
-    case .full:
-      return factory.transformListening(entry: entry, asset: asset)
-        .eraseToAnyPublisher()
-      
-    case .mini:
-      return factory.transformListeningMini(entry: entry, asset: asset)
-        .eraseToAnyPublisher()
-      
-    case .video:
-      return Just(.none)
-        .eraseToAnyPublisher()
-      
-    case .none:
-      return Just(.none)
-        .eraseToAnyPublisher()
-    }
-  }
-}
-
-

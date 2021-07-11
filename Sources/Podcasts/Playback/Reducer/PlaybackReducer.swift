@@ -1,11 +1,3 @@
-//
-//  PlaybackReducer.swift
-//  Podcasts
-//
-//  Created by Michael Nisi on 24.05.21.
-//  Copyright © 2021 Michael Nisi. All rights reserved.
-//
-
 import Foundation
 import Playback
 import Combine

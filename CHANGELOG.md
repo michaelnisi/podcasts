@@ -1,3 +1,3 @@
 ## 1.0.0 (planned)
 
-Extracted from Podest app.
+Extract podcast core functionality from Podest podcast app.

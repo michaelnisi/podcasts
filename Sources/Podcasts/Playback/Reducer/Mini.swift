@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  Mini.swift
 //  
 //
 //  Created by Michael Nisi on 17.06.21.
@@ -19,41 +19,33 @@ extension PlaybackReducer {
     let factory: PlayerFactory
     
     func reduce(_ action: PlaybackController.Action) -> AnyPublisher<PlaybackController.State, Never> {
-      switch action.event {
-      case .inactive(_):
+      switch action {
+      case .inactive(_, _):
         return Just(.none)
           .eraseToAnyPublisher()
         
-      case .paused(_, _, _):
+      case .paused(_, _, _, _):
         player.configure(item: player.item, playback: .paused)
         
         return Just(.mini(entry, asset, player))
           .eraseToAnyPublisher()
         
-      case .preparing(_, _):
+      case .preparing(_, _, _):
         return Just(.none)
           .eraseToAnyPublisher()
         
-      case let .listening(entry, asset):
-        switch action.playerType {
+      case let .listening(type, entry, asset):
+        switch type {
         case .full:
           return factory.transformListening(entry: entry, asset: asset)
-            .eraseToAnyPublisher()
+              .eraseToAnyPublisher()
           
-        case .mini:
+        case .mini, .none:
           return factory.transformListeningMini(entry: entry, asset: asset, player: player)
-            .eraseToAnyPublisher()
-          
-        case .video:
-          return Just(.none)
-            .eraseToAnyPublisher()
-          
-        case .none:
-          return Just(.none)
-            .eraseToAnyPublisher()
+              .eraseToAnyPublisher()
         }
-  
-      case let .viewing(entry, player):
+
+      case let .viewing(_, entry, player):
         return Just(.video(entry, player))
           .eraseToAnyPublisher()
       }
