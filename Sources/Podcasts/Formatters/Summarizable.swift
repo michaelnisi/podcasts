@@ -1,10 +1,13 @@
+//===----------------------------------------------------------------------===//
 //
-//  Summarizable.swift
-//  Podest
+// This source file is part of the Podcasts open source project
 //
-//  Created by Michael Nisi on 24.04.19.
-//  Copyright © 2019 Michael Nisi. All rights reserved.
+// Copyright (c) 2021 Michael Nisi and collaborators
+// Licensed under MIT License
 //
+// See https://github.com/michaelnisi/podcasts/blob/main/LICENSE for license information
+//
+//===----------------------------------------------------------------------===//
 
 import Foundation
 import FeedKit

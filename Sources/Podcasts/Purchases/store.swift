@@ -1,10 +1,13 @@
+//===----------------------------------------------------------------------===//
 //
-//  store.swift
-//  Podest
+// This source file is part of the Podcasts open source project
 //
-//  Created by Michael Nisi on 13.04.18.
-//  Copyright © 2018 Michael Nisi. All rights reserved.
+// Copyright (c) 2021 Michael Nisi and collaborators
+// Licensed under MIT License
 //
+// See https://github.com/michaelnisi/podcasts/blob/main/LICENSE for license information
+//
+//===----------------------------------------------------------------------===//
 
 import Foundation
 import StoreKit

@@ -1,9 +1,13 @@
+//===----------------------------------------------------------------------===//
 //
-//  Mini.swift
-//  
+// This source file is part of the Podcasts open source project
 //
-//  Created by Michael Nisi on 17.06.21.
+// Copyright (c) 2021 Michael Nisi and collaborators
+// Licensed under MIT License
 //
+// See https://github.com/michaelnisi/podcasts/blob/main/LICENSE for license information
+//
+//===----------------------------------------------------------------------===//
 
 import Foundation
 import Combine
@@ -24,11 +28,18 @@ extension PlaybackReducer {
         return Just(.none)
           .eraseToAnyPublisher()
         
-      case .paused(_, _, _, _):
+      case let .paused(type, _, _, _):
         player.configure(item: player.item, playback: .paused)
         
-        return Just(.mini(entry, asset, player))
-          .eraseToAnyPublisher()
+        switch type {
+        case .full:
+          return factory.transformListening(entry: entry, asset: asset)
+              .eraseToAnyPublisher()
+          
+        case .mini, .none:
+          return factory.transformListeningMini(entry: entry, asset: asset, player: player)
+              .eraseToAnyPublisher()
+        }
         
       case .preparing(_, _, _):
         return Just(.none)

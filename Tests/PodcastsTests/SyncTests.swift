@@ -1,10 +1,13 @@
+//===----------------------------------------------------------------------===//
 //
-//  SyncTests.swift
-//  PodestTests
+// This source file is part of the Podcasts open source project
 //
-//  Created by Michael on 11/1/17.
-//  Copyright © 2017 Michael Nisi. All rights reserved.
+// Copyright (c) 2021 Michael Nisi and collaborators
+// Licensed under MIT License
 //
+// See https://github.com/michaelnisi/podcasts/blob/main/LICENSE for license information
+//
+//===----------------------------------------------------------------------===//
 
 import XCTest
 import CloudKit

@@ -1,10 +1,13 @@
+//===----------------------------------------------------------------------===//
 //
-//  strings.swift - format strings and attributed strings
-//  Podest
+// This source file is part of the Podcasts open source project
 //
-//  Created by Michael Nisi on 07/08/16.
-//  Copyright © 2016 Michael Nisi. All rights reserved.
+// Copyright (c) 2021 Michael Nisi and collaborators
+// Licensed under MIT License
 //
+// See https://github.com/michaelnisi/podcasts/blob/main/LICENSE for license information
+//
+//===----------------------------------------------------------------------===//
 
 import UIKit
 import FeedKit

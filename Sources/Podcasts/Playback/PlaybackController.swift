@@ -1,10 +1,13 @@
+//===----------------------------------------------------------------------===//
 //
-//  PlaybackController.swift
-//  Podcasts
+// This source file is part of the Podcasts open source project
 //
-//  Created by Michael Nisi on 22.05.21.
-//  Copyright © 2021 Michael Nisi. All rights reserved.
+// Copyright (c) 2021 Michael Nisi and collaborators
+// Licensed under MIT License
 //
+// See https://github.com/michaelnisi/podcasts/blob/main/LICENSE for license information
+//
+//===----------------------------------------------------------------------===//
 
 import Foundation
 import FeedKit
@@ -15,7 +18,7 @@ import Combine
 import AVFoundation
 import FileProxy
 
-private let logger = Logger(subsystem: "ink.codes.podcasts", category: "Playing")
+private let logger = Logger(subsystem: "ink.codes.podcasts", category: "Playback")
 
 extension Entry: Playable {
   public func makePlaybackItem() -> PlaybackItem {
