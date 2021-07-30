@@ -56,5 +56,4 @@ public protocol Downloading: FileProxyDelegate {
   /// streaming over mobile data and `url` isn’t available locally or over
   /// Wi-Fi.
   func url(for url: URL) throws -> URL
-  
 }

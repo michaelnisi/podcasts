@@ -20,7 +20,10 @@ struct PlaybackReducer {
   let logger = Logger(subsystem: "ink.codes.podcasts", category: "Playback")
   let factory: PlayerFactory
   
-  func reducer(state: PlaybackController.State, action: PlaybackController.Action) -> AnyPublisher<PlaybackController.State, Never> {
+  func reducer(
+    state: PlaybackController.State,
+    action: PlaybackController.Action
+  ) -> AnyPublisher<PlaybackController.State, Never> {
     switch state {
     case let .full(entry, asset, player):
       return Full(entry: entry, asset: asset, player: player, factory: factory)
