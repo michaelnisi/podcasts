@@ -29,8 +29,8 @@ struct PlaybackReducer {
       return Full(entry: entry, asset: asset, player: player, factory: factory)
         .reduce(action)
       
-    case let .mini(entry, asset, player):
-      return Mini(entry: entry, asset: asset, player: player, factory: factory)
+    case let .mini(_, _, player):
+      return Mini(player: player, factory: factory)
         .reduce(action)
       
     case let .video(entry, player):

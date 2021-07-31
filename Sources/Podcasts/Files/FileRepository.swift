@@ -15,7 +15,7 @@ import FeedKit
 import Ola
 import FileProxy
 
-private let log = OSLog(subsystem: "ink.codes.podest", category: "fs")
+private let log = OSLog(subsystem: "ink.codes.podest", category: "Files'")
 
 final class FileRepository: NSObject {
 

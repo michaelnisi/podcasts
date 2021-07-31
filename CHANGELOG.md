@@ -1,3 +1,3 @@
 ## 1.0.0 (planned)
 
-Extract podcast core functionality from Podest podcast app.
+Extract core functionality of podcast app into this package.

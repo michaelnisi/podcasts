@@ -17,8 +17,6 @@ import FeedKit
 
 extension PlaybackReducer {
   struct Mini {
-    let entry: Entry
-    let asset: AssetState
     let player: Epic.MiniPlayer
     let factory: PlayerFactory
     
@@ -28,17 +26,17 @@ extension PlaybackReducer {
         return Just(.none)
           .eraseToAnyPublisher()
         
-      case let .paused(type, _, _, _):
-        player.configure(item: player.item, playback: .paused)
+      case let .paused(type, entry, asset, error):
+        guard let asset = asset, error == nil else {
+          fatalError("unhandled problem: \((asset, error))")
+        }
         
         switch type {
         case .full:
           return factory.transformListening(entry: entry, asset: asset)
-              .eraseToAnyPublisher()
-          
+              
         case .mini, .none:
           return factory.transformListeningMini(entry: entry, asset: asset, player: player)
-              .eraseToAnyPublisher()
         }
         
       case .preparing(_, _, _):
@@ -49,11 +47,9 @@ extension PlaybackReducer {
         switch type {
         case .full:
           return factory.transformListening(entry: entry, asset: asset)
-              .eraseToAnyPublisher()
           
         case .mini, .none:
           return factory.transformListeningMini(entry: entry, asset: asset, player: player)
-              .eraseToAnyPublisher()
         }
 
       case let .viewing(_, entry, player):

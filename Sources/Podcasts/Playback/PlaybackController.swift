@@ -37,11 +37,11 @@ public class PlaybackController {
   public enum State: CustomStringConvertible {
     public var description: String {
       switch self {
-      case let .full(entry, _, _):
-        return "full: \(entry.description)"
+      case let .full(entry, asset, _):
+        return "full: \((entry.description, asset.isPlaying))"
         
-      case let .mini(entry, _, _):
-        return "mini: \(entry.description)"
+      case let .mini(entry, asset, _):
+        return "mini: \((entry.description, asset.isPlaying))"
         
       case let .video(entry, _):
         return "video: \(entry.description)"
