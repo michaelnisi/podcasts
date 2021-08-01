@@ -30,7 +30,7 @@ struct PlaybackReducer {
         .reduce(action)
       
     case let .mini(_, _, player):
-      return Mini(player: player, factory: factory)
+      return Mini(player: player, factory: factory, oldState: state)
         .reduce(action)
       
     case let .video(entry, player):

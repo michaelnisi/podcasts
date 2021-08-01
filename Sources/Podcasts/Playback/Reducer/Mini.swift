@@ -19,6 +19,7 @@ extension PlaybackReducer {
   struct Mini {
     let player: Epic.MiniPlayer
     let factory: PlayerFactory
+    let oldState: PlaybackController.State
     
     func reduce(_ action: PlaybackController.Action) -> AnyPublisher<PlaybackController.State, Never> {
       switch action {
@@ -39,9 +40,8 @@ extension PlaybackReducer {
           return factory.transformListeningMini(entry: entry, asset: asset, player: player)
         }
         
-      case .preparing(_, _, _):
-        return Just(.none)
-          .eraseToAnyPublisher()
+      case .preparing:
+        return Just(oldState).eraseToAnyPublisher()
         
       case let .listening(type, entry, asset):
         switch type {
