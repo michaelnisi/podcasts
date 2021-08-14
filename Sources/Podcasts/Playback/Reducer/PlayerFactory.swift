@@ -122,9 +122,3 @@ extension PlayerFactory {
       .eraseToAnyPublisher()
   }
 }
-
-// MARK: - Video
-
-extension PlaybackController {
-
-}

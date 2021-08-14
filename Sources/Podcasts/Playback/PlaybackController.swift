@@ -108,7 +108,7 @@ extension PlaybackController {
   
   private func enqueue(_ entry: Entry?) -> Future<Entry, Never> {
     Future { promise in
-      Podcasts.userQueue.enqueue(entries: [entry!]) { enqueued, error in
+      Podcasts.userQueue.enqueue(entries: [entry!], belonging: .user) { enqueued, error in
         if let er = error {
           logger.error("enqueue warning: \(String(describing: er))")
         }
