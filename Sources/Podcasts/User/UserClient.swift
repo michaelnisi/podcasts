@@ -390,7 +390,7 @@ public class UserClient {
     for zoneID in sorted {
       let zoneName = zoneID.zoneName
 
-      os_log("** purging zone: %@", log: log, zoneName)
+      os_log(" purging zone: %@", log: log, zoneName)
 
       try cache.purgeZone(named: zoneName)
 
@@ -927,7 +927,7 @@ extension UserClient {
             return er.code == .userDeletedZone
           }) {
             do {
-              os_log("** deleting zombies", log: log, type: .info)
+              os_log(" deleting zombies", log: log, type: .info)
               try self.cache.deleteZombies()
             } catch {
               os_log("could not delete zombies: %{public}@",
@@ -985,7 +985,7 @@ extension UserClient {
       let deletedCount = deletedRecordIDs?.count ?? 0
       let diff = m.count - savedCount - deletedCount
       if  diff > 0 {
-        os_log("** %i modifications not saved", log: log, type: .info, diff)
+        os_log(" %i modifications not saved", log: log, type: .info, diff)
       } else {
         os_log("all modifications saved", log: log, type: .info)
       }
@@ -1107,7 +1107,7 @@ extension UserClient: UserSyncing {
         }
         
         do {
-          os_log("** removing stale previously queued", log: log, type: .info)
+          os_log(" removing stale previously queued", log: log, type: .info)
           try self.cache.removeStalePrevious()
           
           let queued = try self.cache.locallyQueued()
@@ -1265,12 +1265,12 @@ fileprivate extension UserDefaults {
 
   func uuid(matching key: String) -> UUID? {
     guard let str = UserDefaults.standard.string(forKey: key) else {
-      os_log("** UUID not found: %@", log: log, key)
+      os_log(" UUID not found: %@", log: log, key)
       return nil
     }
 
     guard let uuid = UUID(uuidString: str) else {
-      os_log("** decoding UUID failed: %@",log: log, key)
+      os_log(" decoding UUID failed: %@",log: log, key)
       return nil
     }
 
@@ -1287,7 +1287,7 @@ fileprivate extension UserDefaults {
   func serverChangeToken(
     matching key: String) -> CKServerChangeToken? {
     guard let data = UserDefaults.standard.object(forKey: key) as? Data else {
-      os_log("** server change token not found: %@", log: log, key)
+      os_log(" server change token not found: %@", log: log, key)
       return nil
     }
 
@@ -1296,7 +1296,7 @@ fileprivate extension UserDefaults {
       coder.requiresSecureCoding = true
       return CKServerChangeToken(coder: coder)
     } catch {
-      os_log("** decoding server change token failed: ( %@, %@ )",
+      os_log(" decoding server change token failed: ( %@, %@ )",
              log: log, key, error as CVarArg)
       return nil
     }
@@ -1332,7 +1332,7 @@ extension UserClient {
              log: log, type: .info, uuid as CVarArg, key)
       UserDefaults.standard.setUUID(uuid, using: key)
     case nil:
-      os_log("** removing object: %@",
+      os_log(" removing object: %@",
              log: log, type: .info, key)
       UserDefaults.standard.removeObject(forKey: key)
     default:

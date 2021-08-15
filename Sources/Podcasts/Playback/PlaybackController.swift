@@ -102,18 +102,28 @@ public class PlaybackController {
 extension PlaybackController {
   private func skipTo(_ entry: Entry) -> Future<Entry, Never> {
     Future { promise in
+      do {
+        try Podcasts.userQueue.skip(to: entry)
+      } catch {
+        logger.error("could not skip to: \(error.localizedDescription)")
+      }
+      
       promise(.success(entry))
     }
   }
   
   private func enqueue(_ entry: Entry?) -> Future<Entry, Never> {
     Future { promise in
-      Podcasts.userQueue.enqueue(entries: [entry!], belonging: .user) { enqueued, error in
-        if let er = error {
-          logger.error("enqueue warning: \(String(describing: er))")
+      guard let entry = entry else {
+        fatalError("unhandled missing entry error")
+      }
+      
+      Podcasts.userQueue.enqueue(entries: [entry], belonging: .user) { enqueued, error in
+        if let error = error {
+          logger.error("enqueue warning: \(error.localizedDescription)")
         }
         
-        promise(.success(entry!))
+        promise(.success(entry))
       }
     }
   }
@@ -125,6 +135,10 @@ extension PlaybackController {
       Podcasts.browser.entries([locator], entriesBlock: { error, entries in
         acc += entries
       }) { error in
+        if let error = error {
+          logger.error("missing entry: \(error.localizedDescription)")
+        }
+        
         promise(.success(acc))
       }
     }
