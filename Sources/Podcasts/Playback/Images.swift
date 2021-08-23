@@ -13,7 +13,7 @@ import FeedKit
 import Playback
 
 extension Entry: Imaginable {
-  public func makeURLs() -> ImageURLs {
+  public func makeImageURLs() -> ImageURLs {
     guard let iTunes = iTunes else {
       return ImageURLs(
         id: feed.hash,
@@ -35,9 +35,15 @@ extension Entry: Imaginable {
 }
 
 extension Feed: Imaginable {
-  public func makeURLs() -> ImageURLs {
+  public func makeImageURLs() -> ImageURLs {
     guard let iTunes = iTunes else {
-      fatalError("missing iTunes")
+      return ImageURLs(
+        id: url.hash,
+        title: title,
+        small: image!,
+        medium: image!,
+        large: image!
+      )
     }
     
     return ImageURLs(

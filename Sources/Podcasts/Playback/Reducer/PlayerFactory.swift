@@ -42,7 +42,12 @@ extension PlayerFactory {
     )
   }
   
-  func transformListening(entry: Entry, asset: AssetState, player: Epic.Player? = nil) -> AnyPublisher<PlaybackController.State, Never> {
+  func transformListening(
+    entry: Entry,
+    asset: AssetState,
+    player: Epic.Player? = nil,
+    error: PlaybackError? = nil
+  ) -> AnyPublisher<PlaybackController.State, Never> {
     loadImage(representing: entry, at: CGSize(width: 600, height: 600))
       .map { image in
         let item = self.makePlayerItem(entry: entry, image: image)
@@ -96,7 +101,32 @@ extension PlayerFactory {
     MiniPlayer.Item(title: entry.title, image: image)
   }
   
-  func transformListeningMini(entry: Entry, asset: AssetState, player: MiniPlayer? = nil) -> AnyPublisher<PlaybackController.State, Never> {
+  func makeMessage(error: PlaybackError?) -> PlaybackController.Message {
+    guard let error = error else {
+      return .none
+    }
+    
+    switch error {
+    case .unreachable:
+      return .error(
+        LocalizedStringKey.error_offline_title.string,
+        LocalizedStringKey.error_offline_message.string
+      )
+    
+    default:
+      return .error(
+        LocalizedStringKey.error_unknown_title.string,
+        LocalizedStringKey.error_unknown_message.string
+      )
+    }
+  }
+  
+  func transformListeningMini(
+    entry: Entry,
+    asset: AssetState,
+    player: MiniPlayer? = nil,
+    error: PlaybackError? = nil
+  ) -> AnyPublisher<PlaybackController.State, Never> {
     loadImage(representing: entry, at: CGSize(width: 600, height: 600))
       .map { image in
         let player = player ?? Epic.MiniPlayer()
@@ -117,7 +147,7 @@ extension PlayerFactory {
         
         player.configure(item: item, playback: asset.playback)
         
-        return .mini(entry, asset, player)
+        return .mini(entry, asset, player, makeMessage(error: error))
       }
       .eraseToAnyPublisher()
   }

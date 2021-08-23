@@ -14,6 +14,7 @@ import PackageDescription
 
 let package = Package(
   name: "Podcasts",
+  defaultLocalization: "en",
   platforms: [
     .iOS(.v14)
   ],

@@ -10,11 +10,8 @@
 //===----------------------------------------------------------------------===//
 
 import Foundation
-import Playback
 import Combine
-import FeedKit
 import os.log
-import Epic
 
 struct PlaybackReducer {
   let logger = Logger(subsystem: "ink.codes.podcasts", category: "Playback")
@@ -29,7 +26,7 @@ struct PlaybackReducer {
       return Full(entry: entry, asset: asset, player: player, factory: factory)
         .reduce(action)
       
-    case let .mini(_, _, player):
+    case let .mini(_, _, player, _):
       return Mini(player: player, factory: factory, oldState: state)
         .reduce(action)
       

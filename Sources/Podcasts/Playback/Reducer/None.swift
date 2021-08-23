@@ -21,20 +21,18 @@ extension PlaybackReducer {
     func reduce(_ action: PlaybackController.Action) -> AnyPublisher<PlaybackController.State, Never> {
       switch action {
       case .inactive(_, _):
-        return Just(.none)
+        return Just(.none(.none))
           .eraseToAnyPublisher()
         
-      case .paused(_, _, _, _):
-        return Just(.none)
+      case let .paused(_, _, _, error):
+        return Just(.none(factory.makeMessage(error: error)))
           .eraseToAnyPublisher()
         
       case .preparing(_, _, _):
-        return Just(.none)
+        return Just(.none(.none))
           .eraseToAnyPublisher()
         
-      case let .listening(type, entry, asset):
-        precondition(type == .none)
-        
+      case let .listening(_, entry, asset):
         return factory.transformListeningMini(entry: entry, asset: asset, player: nil)
         
       case let .viewing(_, entry, player):

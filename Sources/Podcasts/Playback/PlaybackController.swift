@@ -27,20 +27,25 @@ extension Entry: Playable {
       url: enclosure!.url,
       title: title,
       subtitle: feedTitle ?? "",
-      imageURLs: makeURLs(),
+      imageURLs: makeImageURLs(),
       proclaimedMediaType: enclosure!.type.isVideo ? .video : .audio
     )
   }
 }
 
 public class PlaybackController {
+  public enum Message {
+      case none
+      case error(String, String)
+  }
+  
   public enum State: CustomStringConvertible {
     public var description: String {
       switch self {
       case let .full(entry, asset, _):
         return "full: \((entry.description, asset.isPlaying))"
         
-      case let .mini(entry, asset, _):
+      case let .mini(entry, asset, _, _):
         return "mini: \((entry.description, asset.isPlaying))"
         
       case let .video(entry, _):
@@ -52,14 +57,9 @@ public class PlaybackController {
     }
     
     case full(Entry, AssetState, Epic.Player)
-    case mini(Entry, AssetState, MiniPlayer)
+    case mini(Entry, AssetState, MiniPlayer, Message)
     case video(Entry, AVPlayer)
-    case none
-  }
-  
-  public enum Message {
-    case error(String, String)
-    case none
+    case none(Message)
   }
   
   enum PlayerType {
@@ -74,8 +74,7 @@ public class PlaybackController {
     case viewing(PlayerType, Entry, AVPlayer)
   }
   
-  @Published public private (set) var state: State = .none 
-  @Published public private (set) var message: Message = .none
+  @Published public private (set) var state: State = .none(.none)
   @Published private var playerType: PlayerType = .none
   
   private let playbackReducer = PlaybackReducer(factory: PlayerFactory())

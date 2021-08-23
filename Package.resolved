@@ -11,6 +11,15 @@
         }
       },
       {
+        "package": "Epic",
+        "repositoryURL": "https://github.com/michaelnisi/epic",
+        "state": {
+          "branch": null,
+          "revision": "ee6a3a74cb30cbf3f6f6bf389b3ee766816dce9d",
+          "version": "1.0.2"
+        }
+      },
+      {
         "package": "FanboyKit",
         "repositoryURL": "https://github.com/michaelnisi/fanboy-kit",
         "state": {
@@ -79,6 +88,15 @@
         "state": {
           "branch": null,
           "revision": "b2e1b6e385c27da926f4d4743e1f084bf9ea70d6",
+          "version": "11.0.0"
+        }
+      },
+      {
+        "package": "Playback",
+        "repositoryURL": "https://github.com/michaelnisi/playback",
+        "state": {
+          "branch": null,
+          "revision": "e72fba56ca34f21c53f0022abf18e9443d598ceb",
           "version": "11.0.0"
         }
       },

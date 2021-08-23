@@ -17,7 +17,6 @@ import HTMLAttributor
 private let log = OSLog.disabled
 
 public struct SummaryAttributes {
-
   static var p: NSParagraphStyle = {
     var p = NSMutableParagraphStyle()
     p.lineSpacing = 2
@@ -26,8 +25,7 @@ public struct SummaryAttributes {
   }()
 
   let title1: [NSAttributedString.Key: Any] = [
-    .font: UIFontMetrics.default.scaledFont(for:
-      .systemFont(ofSize: 29, weight: .bold)),
+    .font: UIFontMetrics.default.scaledFont(for: .systemFont(ofSize: 29, weight: .bold)),
     .foregroundColor: UIColor(named: "Primary")!,
     .paragraphStyle: p
   ]
@@ -63,12 +61,11 @@ public struct Summary<Item> {
   public func attribute(summary: String?) -> NSAttributedString {
     let html = HTMLAttributor()
 
-    os_log("attributing: %@",
-           log: log, type: .info, String(describing: summary))
+    os_log("attributing: %@", log: log, type: .info, String(describing: summary))
 
     let str: String = {
       guard let s = summary, s != "" else {
-        return "Sorry, we have no summary for this item at this time."
+        return LocalizedStringKey.no_summary.string
       }
 
       return s
@@ -86,13 +83,13 @@ public struct Summary<Item> {
       return try html.attributedString(tree, styles: styles)
     } catch {
       os_log("parsing summary failed: %@", log: log, error as CVarArg)
+      
       return NSAttributedString(string: str, attributes: attributes.body)
     }
   }
 }
 
 extension Summary where Item: Summarizable {
-
   public var attributedString: NSAttributedString {
     if let cached = items.object(forKey: item.guid as NSString) {
       return cached
@@ -121,7 +118,6 @@ extension Summary where Item: Summarizable {
 /// Why wouldn’t this be an instance, referenced from Podest, like
 /// everything else? For localisation it probably would, no?
 public class StringRepository {
-
   public static var summaryAttributes = SummaryAttributes()
 
   public static func purge() {
@@ -345,7 +341,7 @@ extension StringRepository {
     ]
 
     guard let title = titled else {
-      return NSAttributedString(string: "Sorry, this feed does not validate.")
+      return NSAttributedString(string: LocalizedStringKey.invalid_feed.string)
     }
     
     let a = NSMutableAttributedString(string: "Sorry, this feed – ")

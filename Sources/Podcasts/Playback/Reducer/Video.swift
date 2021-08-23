@@ -23,15 +23,15 @@ extension PlaybackReducer {
     func reduce(_ action: PlaybackController.Action) -> AnyPublisher<PlaybackController.State, Never> {
       switch action {
       case .inactive(_, _):
-        return Just(.none)
+        return Just(.none(.none))
           .eraseToAnyPublisher()
         
       case .paused(_, _, _, _):
-        return Just(.none)
+        return Just(.none(.none))
           .eraseToAnyPublisher()
         
       case .preparing(_, _, _):
-        return Just(.none)
+        return Just(.none(.none))
           .eraseToAnyPublisher()
         
       case let .listening(_, entry, asset):

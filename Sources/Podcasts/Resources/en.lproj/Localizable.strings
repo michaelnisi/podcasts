@@ -1,0 +1,18 @@
+//===----------------------------------------------------------------------===//
+//
+// This source file is part of the Podest open source project
+//
+// Copyright (c) 2021 Michael Nisi and collaborators
+// Licensed under MIT License
+//
+// See https://github.com/michaelnisi/podest/blob/main/LICENSE for license information
+//
+//===----------------------------------------------------------------------===//
+
+"no_summary" = "Sorry, we have no summary for this item at this time.";
+"invalid_feed" = "Sorry, this feed does not validate.";
+
+"error_offline_title" = "Offline";
+"error_offline_message" = "You seem to be offline.";
+"error_unknown_title" = "Unknown Error";
+"error_unknown_message" = "Sorry, something unexpected happended.";

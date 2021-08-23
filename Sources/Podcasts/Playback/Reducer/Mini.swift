@@ -24,20 +24,20 @@ extension PlaybackReducer {
     func reduce(_ action: PlaybackController.Action) -> AnyPublisher<PlaybackController.State, Never> {
       switch action {
       case .inactive(_, _):
-        return Just(.none)
+        return Just(.none(.none))
           .eraseToAnyPublisher()
         
       case let .paused(type, entry, asset, error):
-        guard let asset = asset, error == nil else {
-          fatalError("unhandled problem: \((asset, error))")
+        guard let asset = asset else {
+          fatalError("unhandled problem: missing asset")
         }
-        
+            
         switch type {
         case .full:
-          return factory.transformListening(entry: entry, asset: asset)
+          return factory.transformListening(entry: entry, asset: asset, player: nil)
               
         case .mini, .none:
-          return factory.transformListeningMini(entry: entry, asset: asset, player: player)
+          return factory.transformListeningMini(entry: entry, asset: asset, player: player, error: error)
         }
         
       case .preparing:
