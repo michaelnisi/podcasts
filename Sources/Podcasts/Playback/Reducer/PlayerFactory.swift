@@ -60,7 +60,8 @@ extension PlayerFactory {
           isPlaying: asset.isPlaying,
           isForwardable: true,
           isBackwardable: true,
-          trackTime: asset.time
+          trackTime: asset.time,
+          trackDuration: asset.duration
         )
         
         player.actionHandler = { action in
@@ -79,6 +80,9 @@ extension PlayerFactory {
             
           case .close:
             Podcasts.player.hidePlayer()
+            
+          case let .scrub(time):
+            Podcasts.player.scrub(time: time)
           }
         }
         

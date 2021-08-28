@@ -18,7 +18,7 @@ import Combine
 import AVFoundation
 import FileProxy
 
-private let logger = Logger(subsystem: "ink.codes.podcasts", category: "Playback")
+private let logger: Logger? = nil // Logger(subsystem: "ink.codes.podcasts", category: "Playback")
 
 extension Entry: Playable {
   public func makePlaybackItem() -> PlaybackItem {
@@ -104,7 +104,7 @@ extension PlaybackController {
       do {
         try Podcasts.userQueue.skip(to: entry)
       } catch {
-        logger.error("could not skip to: \(error.localizedDescription)")
+        logger?.error("could not skip to: \(error.localizedDescription)")
       }
       
       promise(.success(entry))
@@ -119,7 +119,7 @@ extension PlaybackController {
       
       Podcasts.userQueue.enqueue(entries: [entry], belonging: .user) { enqueued, error in
         if let error = error {
-          logger.error("enqueue warning: \(error.localizedDescription)")
+          logger?.error("enqueue warning: \(error.localizedDescription)")
         }
         
         promise(.success(entry))
@@ -135,7 +135,7 @@ extension PlaybackController {
         acc += entries
       }) { error in
         if let error = error {
-          logger.error("missing entry: \(error.localizedDescription)")
+          logger?.error("missing entry: \(error.localizedDescription)")
         }
         
         promise(.success(acc))
@@ -183,8 +183,8 @@ extension PlaybackController {
 // MARK: - Scrubbing
 
 extension PlaybackController {
-  func scrub() {
-    // TODO
+  func scrub(time: TimeInterval) {
+    Podcasts.playback.scrub(time)
   }
 }
 
