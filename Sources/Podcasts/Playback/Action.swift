@@ -14,7 +14,7 @@ import Playback
 import FeedKit
 
 extension PlaybackController.Action {
-  init(playback: PlaybackState<Entry>, type: PlaybackController.PlayerType) {
+  init(playback: PlaybackState<Entry>, type: PlaybackController.Mode) {
     switch playback {
     case let .inactive(error):
       self = .inactive(type, error)

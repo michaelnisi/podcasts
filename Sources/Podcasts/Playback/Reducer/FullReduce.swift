@@ -28,13 +28,17 @@ extension PlaybackReducer {
         return Just(.none(.none))
           .eraseToAnyPublisher()
         
-      case let .paused(type, entry, asset, _):
+      case let .paused(type, entry, asset, error):
         switch type {
         case .full:
-          return factory.transformListening(entry: entry, asset: asset!, player: player)
+          return factory.transformListening(entry: entry, asset: asset!, player: player, error: error)
               .eraseToAnyPublisher()
           
-        case .mini, .none:
+        case let .mini(item):
+          return factory.transformListeningMini(entry: entry, asset: asset!, more: item)
+              .eraseToAnyPublisher()
+          
+        case .none:
           return factory.transformListeningMini(entry: entry, asset: asset!)
               .eraseToAnyPublisher()
         }
@@ -49,7 +53,11 @@ extension PlaybackReducer {
           return factory.transformListening(entry: entry, asset: asset, player: player)
               .eraseToAnyPublisher()
           
-        case .mini, .none:
+        case let .mini(item):
+          return factory.transformListeningMini(entry: entry, asset: asset, more: item)
+              .eraseToAnyPublisher()
+          
+        case .none:
           return factory.transformListeningMini(entry: entry, asset: asset)
               .eraseToAnyPublisher()
         }

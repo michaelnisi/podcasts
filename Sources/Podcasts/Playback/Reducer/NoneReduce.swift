@@ -25,7 +25,7 @@ extension PlaybackReducer {
           .eraseToAnyPublisher()
         
       case let .paused(_, _, _, error):
-        return Just(.none(factory.makeMessage(error: error)))
+        return Just(.none(MetaFactory(value: error).make()))
           .eraseToAnyPublisher()
         
       case .preparing(_, _, _):

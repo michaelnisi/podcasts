@@ -34,9 +34,10 @@ extension Entry: Playable {
 }
 
 public class PlaybackController {
-  public enum Message {
+  public enum Meta {
       case none
       case error(String, String)
+      case more(Entry)
   }
   
   public enum State: CustomStringConvertible {
@@ -57,25 +58,25 @@ public class PlaybackController {
     }
     
     case full(Entry, AssetState, Epic.Player)
-    case mini(Entry, AssetState, MiniPlayer, Message)
+    case mini(Entry, AssetState, MiniPlayer, Meta)
     case video(Entry, AVPlayer)
-    case none(Message)
+    case none(Meta)
   }
   
-  enum PlayerType {
-    case full, mini, none
+  enum Mode {
+    case full, mini(Entry?), none
   }
   
   enum Action {
-    case inactive(PlayerType, PlaybackError?)
-    case paused(PlayerType, Entry, AssetState?, PlaybackError?)
-    case preparing(PlayerType, Entry, Bool)
-    case listening(PlayerType, Entry, AssetState)
-    case viewing(PlayerType, Entry, AVPlayer)
+    case inactive(Mode, PlaybackError?)
+    case paused(Mode, Entry, AssetState?, PlaybackError?)
+    case preparing(Mode, Entry, Bool)
+    case listening(Mode, Entry, AssetState)
+    case viewing(Mode, Entry, AVPlayer)
   }
   
   @Published public private (set) var state: State = .none(.none)
-  @Published private var playerType: PlayerType = .none
+  @Published private var playerType: Mode = .none
   
   private let playbackReducer = PlaybackReducer(factory: PlayerFactory())
   private var settingItem: AnyCancellable?
@@ -186,9 +187,29 @@ extension PlaybackController {
   func scrub(time: TimeInterval) {
     Podcasts.playback.scrub(time)
   }
+  
+  func skipForward() {
+    switch Podcasts.playback.state {
+    case let .listening(_, asset):
+      Podcasts.playback.scrub(min(asset.duration, asset.time + 15))
+      
+    case .inactive, .paused, .preparing, .viewing:
+      break
+    }
+  }
+  
+  func skipBackward() {
+    switch Podcasts.playback.state {
+    case let .listening(_, asset):
+      Podcasts.playback.scrub(max(0, asset.time - 15))
+      
+    case .inactive, .paused, .preparing, .viewing:
+      break
+    }
+  }
 }
 
-// MARK: - Showing and hiding the audio player
+// MARK: - Navigating
 
 extension PlaybackController {
   func showPlayer() {
@@ -196,6 +217,16 @@ extension PlaybackController {
   }
   
   func hidePlayer() {
-    playerType = .mini
+    playerType = .mini(.none)
+  }
+  
+  func more() {
+    switch state {
+    case let .full(entry, _, _):
+      playerType = .mini(entry)
+      
+    case .mini, .video, .none:
+      break
+    }
   }
 }
