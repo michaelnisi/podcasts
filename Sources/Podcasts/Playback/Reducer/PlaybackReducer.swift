@@ -11,10 +11,8 @@
 
 import Foundation
 import Combine
-import os.log
 
 struct PlaybackReducer {
-  let logger = Logger(subsystem: "ink.codes.podcasts", category: "Playback")
   let factory: PlayerFactory
   
   func reducer(

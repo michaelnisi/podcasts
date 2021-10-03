@@ -1,6 +1,6 @@
 # Podcasts
 
-Began extracting podcast app core functionality into this package.
+The Podcasts Swift package implements core functionality of podcast apps exposing a clear API with the `Podcasts` module. It is used in the [Podest](https://github.com/michaelnisi/podest) podcast app from which it was extracted originally.
 
 ## Install
 
