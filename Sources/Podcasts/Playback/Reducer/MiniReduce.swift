@@ -46,7 +46,7 @@ extension PlaybackReducer {
       case let .listening(type, entry, asset):
         switch type {
         case .full:
-          return factory.transformListening(entry: entry, asset: asset)
+          return factory.transformListening(entry: entry, asset: Podcasts.playback.assetState ?? asset)
           
         case .mini, .none:
           return factory.transformListeningMini(entry: entry, asset: asset, player: player)

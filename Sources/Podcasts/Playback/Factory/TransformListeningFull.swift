@@ -36,7 +36,6 @@ extension PlayerFactory {
       .map { image in
         let item = self.makePlayerItem(entry: entry, image: image)
         
-        
         let player = player ?? Epic.Player()
         
         player.configure(

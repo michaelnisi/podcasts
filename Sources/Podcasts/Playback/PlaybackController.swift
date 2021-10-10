@@ -188,17 +188,17 @@ extension PlaybackController {
     Podcasts.playback.scrub(time)
   }
   
-  func skip(_ seconds: Double = 15, damped: (Double, Double) -> Double) {
+  private func skip(_ seconds: Double, damped: (Double, Double) -> Double) {
     switch Podcasts.playback.state {
     case let .listening(_, asset):
-      Podcasts.playback.scrub(damped(asset.duration, asset.time + seconds))
+      Podcasts.playback.scrub(damped(asset.time + seconds, asset.duration))
       
     case let .paused(_, asset, error):
       guard let asset = asset, error == nil else {
         return
       }
       
-      Podcasts.playback.scrub(damped(asset.duration, asset.time + seconds))
+      Podcasts.playback.scrub(damped(asset.time + seconds, asset.duration))
     
     case .inactive, .preparing, .viewing:
       break
@@ -206,11 +206,15 @@ extension PlaybackController {
   }
   
   func skipForward(_ seconds: Double = 15) {
-    skip(seconds, damped: min)
+    skip(seconds) { time, duration in
+      min(time, duration)
+    }
   }
   
-  func skipBackward(_ seconds: Double = 15) {
-    skip(seconds, damped: max)
+  func skipBackward(_ seconds: Double = -15) {
+    skip(seconds) { time, _ in
+      max(time, 0)
+    }
   }
 }
 
