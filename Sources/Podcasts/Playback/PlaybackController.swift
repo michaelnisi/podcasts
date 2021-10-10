@@ -189,11 +189,11 @@ extension PlaybackController {
   }
   
   func skipForward(_ seconds: Double = 15) {
-    Podcasts.playback.scrub(seconds)
+    Podcasts.playback.scrub(adding: seconds)
   }
   
   func skipBackward(_ seconds: Double = -15) {
-    Podcasts.playback.scrub(seconds)
+    Podcasts.playback.scrub(adding: seconds)
   }
 }
 
