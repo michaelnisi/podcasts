@@ -25,10 +25,10 @@ let package = Package(
   ],
   dependencies: [
     .package(name: "FeedKit", url: "https://github.com/michaelnisi/feedkit", from: "17.0.0"),
-    .package(name: "Playback", url: "https://github.com/michaelnisi/playback", from: "11.0.0"),
+    .package(name: "Playback", url: "https://github.com/michaelnisi/playback", from: "12.1.0"),
     .package(name: "FileProxy", url: "https://github.com/michaelnisi/fileproxy", from: "6.0.0"),
     .package(name: "HTMLAttributor", url: "https://github.com/michaelnisi/hattr", from: "6.0.0"),
-    .package(name: "Epic", url: "https://github.com/michaelnisi/epic", from: "1.0.0")
+    .package(name: "Epic", url: "https://github.com/michaelnisi/epic", from: "1.1.1")
   ],
   targets: [
     .target(

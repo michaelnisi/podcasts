@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/michaelnisi/clay",
         "state": {
           "branch": null,
-          "revision": "ba182b077b5d126ccb47d4ac023a0b670a9b5ba1",
-          "version": "1.0.1"
+          "revision": "e4c5800275ee3950551d9018b00830042d2cb5a5",
+          "version": "2.1.0"
         }
       },
       {
@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/michaelnisi/epic",
         "state": {
           "branch": null,
-          "revision": "ee6a3a74cb30cbf3f6f6bf389b3ee766816dce9d",
-          "version": "1.0.2"
+          "revision": "541472a767772b8a82533f93c5d8ca45857fae94",
+          "version": "1.1.1"
         }
       },
       {
@@ -96,8 +96,8 @@
         "repositoryURL": "https://github.com/michaelnisi/playback",
         "state": {
           "branch": null,
-          "revision": "e72fba56ca34f21c53f0022abf18e9443d598ceb",
-          "version": "11.0.0"
+          "revision": "7e03bba3c0919395cbf5453f245495e3f95bc9b0",
+          "version": "12.1.0"
         }
       },
       {
