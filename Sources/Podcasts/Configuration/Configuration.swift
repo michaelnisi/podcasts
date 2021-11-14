@@ -116,8 +116,7 @@ private func makeFeedRepo(_ conf: Configuration) throws -> FeedRepository {
 
 private func createDirectory(_ dir: URL) {
   do {
-    try FileManager.default
-      .createDirectory(at: dir, withIntermediateDirectories: false)
+    try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: false)
   } catch {
     let er = error as NSError
     
@@ -255,12 +254,17 @@ class Configuration {
   
   lazy var userCache = makeUserCache(self)
   
-  func freshUserLibrary() throws -> UserLibrary {
+  private lazy var synchronizedQueue: OperationQueue = {
     let queue = OperationQueue()
     queue.maxConcurrentOperationCount = 1
     queue.qualityOfService = .userInitiated
+    queue.name = "ink.codes.podcasts.Configuration.Sync"
     
-    return UserLibrary(cache: userCache, browser: browser, queue: queue)
+    return queue
+  }()
+  
+  func freshUserLibrary() throws -> UserLibrary {
+    UserLibrary(cache: userCache, browser: browser, queue: synchronizedQueue)
   }
   
   lazy var user: UserLibrary = try! self.freshUserLibrary()
@@ -275,12 +279,7 @@ class Configuration {
       fatalError("could not init probe: \(host)")
     }
     
-    let q = OperationQueue()
-    q.name = "ink.codes.podest.sync"
-    q.maxConcurrentOperationCount = 1
-    q.qualityOfService = .utility
-    
-    let client = UserClient(cache: userCache, probe: probe, queue: q)
+    let client = UserClient(cache: userCache, probe: probe, queue: synchronizedQueue)
     
     if self.settings.flush {
       client.flush()

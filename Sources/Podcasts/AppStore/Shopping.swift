@@ -12,8 +12,6 @@
 import Foundation
 import StoreKit
 
-// MARK: - Dependencies
-
 /// Plain Strings to identify products for flexibility.
 public typealias ProductIdentifier = String
 
@@ -60,7 +58,6 @@ protocol Paying {
 }
 
 extension Paying {
-  
   func add(_ payment: SKPayment) {
     SKPaymentQueue.default().add(payment)
   }
@@ -81,8 +78,6 @@ extension Paying {
     SKPaymentQueue.default().remove(observer)
   }
 }
-
-// MARK: - API
 
 /// Enumerates possible presentation layer error types, grouping StoreKit and
 /// other errors into five simplified buckets.
@@ -151,7 +146,6 @@ public enum ShoppingError: Error {
 
 /// Get notified when accessiblity to the store changes.
 public protocol StoreAccessDelegate: AnyObject {
-
   /// Pinged if the store should be shown or hidden.
   func store(_ store: Shopping, isAccessible: Bool)
   
@@ -168,7 +162,6 @@ public protocol StoreAccessDelegate: AnyObject {
 
 /// Receives shopping events.
 public protocol StoreDelegate: AnyObject {
-
   /// After fetching available IAPs, this callback receives products or error.
   func store(
     _ store: Shopping,
@@ -188,7 +181,6 @@ public protocol StoreDelegate: AnyObject {
 
 /// Ask users for rating and reviews.
 public protocol Rating {
-
   /// Requests user to rate the app if appropriate.
   func considerReview()
 
@@ -205,7 +197,6 @@ public protocol Rating {
 
 /// Checking user status.
 public protocol Expiring {
-
   /// Returns `true` if the trial period has been exceeded, `false` is returned
   /// within the trial period or if a valid subscription receipt is present.
   ///
@@ -215,7 +206,6 @@ public protocol Expiring {
 
 /// A set of methods to offer in-app purchases.
 public protocol Shopping: SKPaymentTransactionObserver, Rating, Expiring {
-
   /// Clients use this delegate to receive callbacks from the store.
   var delegate: StoreDelegate? { get set }
 
@@ -240,5 +230,8 @@ public protocol Shopping: SKPaymentTransactionObserver, Rating, Expiring {
   
   /// Notifies the store that the App Store is reachable.
   func online()
+  
+  /// Requests App Store to restore previously completed purchases.
+  func restore()
 }
 

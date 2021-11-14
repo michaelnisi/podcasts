@@ -15,11 +15,10 @@ import Foundation
 import Ola
 import os.log
 
-private let log = OSLog(subsystem: "ink.codes.podest", category: "sync")
+private let log = OSLog(subsystem: "ink.codes.podcasts", category: "User")
 
 /// CloudKit client to synchronize user data: queue and subscriptions.
 public class UserClient {
-  
   private let cache: UserCacheSyncing
   private let probe: Ola
   private let queue: OperationQueue
@@ -40,8 +39,8 @@ public class UserClient {
   }
   
   private let userChangesSubscriptionKey = UserDB.subscriptionKey
-  
   private let container = CKContainer(identifier: UserDB.containerIdentifier)
+  private var lastPull: TimeInterval = 0
   
   /// Merges data, `modified` and `deleted` records, received from the zone
   /// matching `zoneID` into the local cache.
@@ -78,8 +77,7 @@ public class UserClient {
   ///   - previous: Previous items from the queue.
   ///
   /// - Returns: Returns a tuple containing GUIDs of renewed and obsolete items.
-  static func subtract(_ current: [Queued], from previous: [Queued]
-  ) -> ([EntryGUID], [EntryGUID]) {
+  static func subtract(_ current: [Queued], from previous: [Queued]) -> ([EntryGUID], [EntryGUID]) {
     os_log("subtracting lists counting: (%i, %i)",
            log: log, type: .info, current.count, previous.count)
 
@@ -161,10 +159,13 @@ public class UserClient {
     try cache.removeQueued(obsolete)
   }
   
+  private typealias ConfsByIDs = [
+    CKRecordZone.ID : CKFetchRecordZoneChangesOperation.ZoneConfiguration
+  ]
+  
   @available(iOS 12.0, *)
-  private static func makeZoneConfigurations(zoneIDs: [CKRecordZone.ID]
-  ) -> [CKRecordZone.ID : CKFetchRecordZoneChangesOperation.ZoneConfiguration] {
-    var r = [CKRecordZone.ID : CKFetchRecordZoneChangesOperation.ZoneConfiguration]()
+  private static func makeZoneConfigurations(zoneIDs: [CKRecordZone.ID]) -> ConfsByIDs {
+    var r = ConfsByIDs()
 
     for zoneID in zoneIDs {
       let zoneKey = UserDB.ChangeTokenKey(zoneID: zoneID)
@@ -179,9 +180,8 @@ public class UserClient {
     return r
   }
   
-  private static func makeFetchZoneChangesOptions(zoneIDs: [CKRecordZone.ID]
-    ) -> [CKRecordZone.ID : CKFetchRecordZoneChangesOperation.ZoneConfiguration] {
-    var r = [CKRecordZone.ID : CKFetchRecordZoneChangesOperation.ZoneConfiguration]()
+  private static func makeFetchZoneChangesOptions(zoneIDs: [CKRecordZone.ID]) -> ConfsByIDs {
+    var r = ConfsByIDs()
 
     for zoneID in zoneIDs {
       let opts = CKFetchRecordZoneChangesOperation.ZoneConfiguration()
@@ -201,7 +201,8 @@ public class UserClient {
   ) -> CKFetchRecordZoneChangesOperation {
     let confs = UserClient.makeZoneConfigurations(zoneIDs: zoneIDs)
     let op = CKFetchRecordZoneChangesOperation(
-      recordZoneIDs: zoneIDs, configurationsByRecordZoneID: confs)
+      recordZoneIDs: zoneIDs, configurationsByRecordZoneID: confs
+    )
     op.fetchAllChanges = true
     
     return op
@@ -209,7 +210,7 @@ public class UserClient {
 
   /// Our default database is the private cloud database.
   private var db: CKDatabase {
-    return container.privateCloudDatabase
+    container.privateCloudDatabase
   }
   
   /// Fetches the changes in zones matching `zoneIDs`.
@@ -225,7 +226,8 @@ public class UserClient {
   private func fetchZoneChanges(
     _ zoneIDs: [CKRecordZone.ID],
     retrying: Bool = false,
-    completionBlock: @escaping (_ error: Error?) -> Void) {
+    completionBlock: @escaping (_ error: Error?) -> Void
+  ) {
     guard !zoneIDs.isEmpty else {
       os_log("not fetching zone changes without identifiers", log: log)
       return completionBlock(nil)
@@ -514,17 +516,8 @@ public class UserClient {
   private var _accountStatus: CKAccountStatus?
 
   private var accountStatus: CKAccountStatus? {
-    get {
-      return sQueue.sync {
-        return _accountStatus
-      }
-    }
-    
-    set {
-      sQueue.sync {
-        _accountStatus = newValue
-      }
-    }
+    get { sQueue.sync { _accountStatus } }
+    set { sQueue.sync { _accountStatus = newValue } }
   }
   
   /// Checks and caches the user‘s iCloud account status.
@@ -580,20 +573,14 @@ public class UserClient {
       }
     }
   }
-  
 }
 
 // MARK: - Subscriptions
 
 extension UserClient {
-  
   private var subscribed: Bool {
-    get {
-      return UserDefaults.standard.bool(forKey: userChangesSubscriptionKey)
-    }
-    set {
-      UserDefaults.standard.set(newValue, forKey: userChangesSubscriptionKey)
-    }
+    get { UserDefaults.standard.bool(forKey: userChangesSubscriptionKey) }
+    set { UserDefaults.standard.set(newValue, forKey: userChangesSubscriptionKey) }
   }
   
   private static func makeSubscriptions() -> [CKSubscription] {
@@ -628,13 +615,11 @@ extension UserClient {
 
     db.add(op)
   }
-  
 }
 
 // MARK: - Serializing Records
 
 extension UserClient {
-  
   private static func makeQueued(
     locator: EntryLocator,
     timestamp: Date,
@@ -837,13 +822,11 @@ extension UserClient {
     
     return record(with: subscription.iTunes, record: rec)
   }
-  
 }
 
 // MARK: - Pushing Data to CloudKit
 
 extension UserClient {
-  
   /// Saves modifications to the private iCloud database, modifying and deleting
   /// records, creating specified zones, not just zones not found, but also user
   /// deleted zones, assuming users could always disable iCloud for this app.
@@ -1002,13 +985,11 @@ extension UserClient {
 
     db.add(op)
   }
-  
 }
 
 // MARK: - Integrating Data from CloudKit
 
 extension UserClient {
-  
   private func delete(recordIDs: [CKRecord.ID]) throws {
     os_log("deleting: %i", log: log, type: .info, recordIDs.count)
     
@@ -1022,15 +1003,13 @@ extension UserClient {
     
     try cache.add(synced: items)
   }
-  
 }
 
 // MARK: - UserSyncing
 
 extension UserClient: UserSyncing {
-  
   public var isAccountStatusKnown: Bool {
-    return accountStatus != nil
+    accountStatus != nil
   }
   
   private struct Modifications {
@@ -1084,37 +1063,37 @@ extension UserClient: UserSyncing {
     }
     
     var isEmpty: Bool {
-      return recordsToSave.isEmpty && recordIDsToDelete.isEmpty
+      recordsToSave.isEmpty && recordIDsToDelete.isEmpty
     }
 
     var count: Int {
-      return recordsToSave.count + recordIDsToDelete.count
+      recordsToSave.count + recordIDsToDelete.count
     }
   }
-
+  
   public func push(completionHandler: @escaping (_ error: Error?) -> Void) {
-    queue.addOperation {
+    queue.addOperation { [unowned self] in
       os_log("pushing to iCloud", log: log, type: .info)
       
-      let status = self.reach()
+      let status = reach()
+    
       guard status == .reachable || status == .cellular else {
         return completionHandler(FeedKitError.offline)
       }
       
-      self.checkAccount(assuming: self.accountStatus) { error in
+      checkAccount(assuming: accountStatus) { error in
         guard error == nil else {
           return completionHandler(error)
         }
         
         do {
           os_log("removing stale previously queued", log: log, type: .info)
-          try self.cache.removeStalePrevious()
+          try cache.removeStalePrevious()
           
-          let queued = try self.cache.locallyQueued()
-          let dequeued = try self.cache.locallyDequeued()
+          let queued = try cache.locallyQueued()
+          let dequeued = try cache.locallyDequeued()
+          let (a, b) = (Set(queued), Set(dequeued))
           
-          let a = Set(queued)
-          let b = Set(dequeued)
           assert(a.intersection(b).isEmpty)
           
           // In this context, type is sufficient.
@@ -1124,14 +1103,14 @@ extension UserClient: UserSyncing {
           // subscriptions.
           let optimized: [Queued] = try items.map {
             let url = $0.entryLocator.url
-            guard try !self.cache.isSubscribed(url) else {
+            guard try !cache.isSubscribed(url) else {
               return $0.dropITunes()
             }
             return $0
           }
           
-          let locallySubscribed = try self.cache.locallySubscribed()
-          let zombieRecords = try self.cache.zombieRecords()
+          let locallySubscribed = try cache.locallySubscribed()
+          let zombieRecords = try cache.zombieRecords()
           
           guard let m = UserClient.Modifications(
             queued: optimized,
@@ -1142,7 +1121,7 @@ extension UserClient: UserSyncing {
             return completionHandler(nil)
           }
 
-          self.save(modifications: m, retrying: true) { error in
+          save(modifications: m, retrying: true) { error in
             completionHandler(error)
           }
         } catch {
@@ -1154,7 +1133,7 @@ extension UserClient: UserSyncing {
   
   /// **Synchronously** probes iCloud reachability.
   private func reach() -> OlaStatus {
-    return probe.reach()
+    probe.reach()
   }
 
   /// After modifying the database under the radar—that’s how `pull` works—
@@ -1189,21 +1168,22 @@ extension UserClient: UserSyncing {
   
   public func pull(completionHandler:
     @escaping (_ newData: Bool, _ error: Error?) -> Void) {
-    queue.addOperation {
+    queue.addOperation { [unowned self] in
       os_log("pulling from iCloud", log: log, type: .info)
       
-      let status = self.reach()
+      let status = reach()
+      
       guard status == .reachable || status == .cellular else {
         return completionHandler(false, FeedKitError.offline)
       }
       
-      self.checkAccount(assuming: self.accountStatus) { error in
+      checkAccount(assuming: accountStatus) { error in
         guard error == nil else {
           return completionHandler(false, error)
         }
         
         func next() {
-          self.fetchDatabaseChanges(retrying: true) { changed, deleted, error in
+          fetchDatabaseChanges(retrying: true) { changed, deleted, error in
             guard error == nil else {
               return completionHandler(false, error)
             }
@@ -1225,8 +1205,8 @@ extension UserClient: UserSyncing {
               return completionHandler(false, nil)
             }
 
-            self.fetchZoneChanges(Array(zoneIDs), retrying: true) { error in
-              self.synchronizeUserLibrary {
+            fetchZoneChanges(Array(zoneIDs), retrying: true) { error in
+              synchronizeUserLibrary {
                 // Reaching this block, `newData` is always `true`
                 completionHandler(true, error)
               }
@@ -1234,8 +1214,8 @@ extension UserClient: UserSyncing {
           }
         }
         
-        if !self.subscribed {
-          self.subscribe { error in
+        if !subscribed {
+          subscribe { error in
             if let er = error {
               os_log("subscription failed: %{public}@", log: log, er as CVarArg)
             } else {
@@ -1258,9 +1238,8 @@ extension UserClient: UserSyncing {
 // MARK: - Storing and Accessing Change Tokens
 
 fileprivate extension UserDefaults {
-
   func setUUID(_ uuid: UUID, using key: String) {
-    self.set(uuid.uuidString, forKey: key)
+    set(uuid.uuidString, forKey: key)
   }
 
   func uuid(matching key: String) -> UUID? {
@@ -1277,15 +1256,14 @@ fileprivate extension UserDefaults {
     return uuid
   }
 
-  func setServerChangeToken(
-    _ token: CKServerChangeToken, using key: String) {
+  func setServerChangeToken(_ token: CKServerChangeToken, using key: String) {
     let coder = NSKeyedArchiver(requiringSecureCoding: true)
+      
     token.encode(with: coder)
-    self.set(coder.encodedData, forKey: key)
+    set(coder.encodedData, forKey: key)
   }
 
-  func serverChangeToken(
-    matching key: String) -> CKServerChangeToken? {
+  func serverChangeToken(matching key: String) -> CKServerChangeToken? {
     guard let data = UserDefaults.standard.object(forKey: key) as? Data else {
       os_log("server change token not found: %@", log: log, key)
       return nil
@@ -1294,18 +1272,16 @@ fileprivate extension UserDefaults {
     do {
       let coder = try NSKeyedUnarchiver(forReadingFrom: data)
       coder.requiresSecureCoding = true
+      
       return CKServerChangeToken(coder: coder)
     } catch {
-      os_log("decoding server change token failed: ( %@, %@ )",
-             log: log, key, error as CVarArg)
+      os_log("decoding server change token failed: ( %@, %@ )", log: log, key, error as CVarArg)
       return nil
     }
   }
-
 }
 
 extension UserClient {
-
   private static func makeUUID(data: Data?) -> UUID? {
     guard let d = data, let str = String(data: d, encoding: .utf8) else {
       return nil
@@ -1324,16 +1300,13 @@ extension UserClient {
   private static func save(token: Any?, for key: String) {
     switch token {
     case let t as CKServerChangeToken:
-      os_log("saving server change token: ( %@, %@ )",
-             log: log, type: .info, t, key)
+      os_log("saving server change token: ( %@, %@ )", log: log, type: .info, t, key)
       UserDefaults.standard.setServerChangeToken(t, using: key)
     case let uuid as UUID:
-      os_log("saving UUID: ( %@, %@ )",
-             log: log, type: .info, uuid as CVarArg, key)
+      os_log("saving UUID: ( %@, %@ )", log: log, type: .info, uuid as CVarArg, key)
       UserDefaults.standard.setUUID(uuid, using: key)
     case nil:
-      os_log("removing object: %@",
-             log: log, type: .info, key)
+      os_log("removing object: %@", log: log, type: .info, key)
       UserDefaults.standard.removeObject(forKey: key)
     default:
       fatalError("invalid type for change token")
@@ -1341,11 +1314,11 @@ extension UserClient {
   }
 
   private static func clientChangeToken(for key: String) -> UUID? {
-    return UserDefaults.standard.uuid(matching: key)
+    UserDefaults.standard.uuid(matching: key)
   }
 
   private static func serverChangeToken(for key: String) -> CKServerChangeToken? {
-    return UserDefaults.standard.serverChangeToken(matching: key)
+    UserDefaults.standard.serverChangeToken(matching: key)
   }
   
   private static func resetServerChangeToken(matching zoneID: CKRecordZone.ID) {
@@ -1366,14 +1339,12 @@ extension UserClient {
     
     resetAccountStatus()
   }
-
 }
 
 // MARK: - NOP
 
 /// A user client that does nothing.
 class NoUserClient: UserSyncing {
-
   var isAccountStatusKnown: Bool {
     os_log("claiming account status: no sync", log: log)
     return true
@@ -1393,7 +1364,4 @@ class NoUserClient: UserSyncing {
   func resetAccountStatus() {
     os_log("not resetting account status: no sync", log: log)
   }
-
 }
-
-

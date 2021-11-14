@@ -93,7 +93,6 @@ enum UserRecordType: String {
 
 /// Synchronizes user data with iCloud, encapsulating our `CloudKit` dependency.
 public protocol UserSyncing {
-  
   /// Is `true` if we know our iCloud account status.
   var isAccountStatusKnown: Bool { get }
 

@@ -33,7 +33,6 @@ private enum StoreEvent {
 }
 
 extension StoreEvent: CustomStringConvertible {
-  
   var description: String {
     switch self {
     case .resume:
@@ -80,7 +79,6 @@ private class DefaultPaymentQueue: Paying {}
 ///
 /// The exposed `Shopping` API expects calls from the main queue.
 final class StoreFSM: NSObject {
-
   /// The file URL of where to find the product identifiers.
   private let url: URL
 
@@ -205,8 +203,7 @@ final class StoreFSM: NSObject {
       )
       _productIdentifiers = Set(localProducts.map { $0.productIdentifier })
       
-      os_log("product identifiers: %@", log: log, type: .debug,
-             _productIdentifiers!)
+      os_log("product identifiers: %@", log: log, type: .debug, _productIdentifiers!)
       
       return _productIdentifiers!
     } catch {
@@ -250,7 +247,7 @@ final class StoreFSM: NSObject {
 
   /// Returns different key for store and sandbox `environment`.
   private static func receiptsKey(suiting environment: BuildVersion.Environment) -> String {
-    return environment == .sandbox ? "receiptsSandbox" : "receipts"
+    environment == .sandbox ? "receiptsSandbox" : "receipts"
   }
   
   public func removeReceipts(forcing: Bool = false) -> Bool {
@@ -298,12 +295,11 @@ final class StoreFSM: NSObject {
   }
 
   static func makeExpiration(date: Date, period: Period) -> Date {
-    return Date(timeIntervalSince1970: date.timeIntervalSince1970 + period.rawValue)
+    Date(timeIntervalSince1970: date.timeIntervalSince1970 + period.rawValue)
   }
 
   private func saveReceipt(_ receipt: PodestReceipt) {
-    os_log("saving receipt: %@", log: log, type: .debug,
-           String(describing: receipt))
+    os_log("saving receipt: %@", log: log, type: .debug, String(describing: receipt))
 
     let acc = loadReceipts() + [receipt]
     let encoder = JSONEncoder()
@@ -394,8 +390,7 @@ final class StoreFSM: NSObject {
   private func validateReceipts() -> StoreState {
     let receipts = loadReceipts()
     
-    os_log("validating receipts: %@", log: log, type: .debug,
-           String(describing: receipts))
+    os_log("validating receipts: %@", log: log, type: .debug, String(describing: receipts))
 
     guard let id = StoreFSM.validProductIdentifier(
       receipts, matching: productIdentifiers) else {
@@ -419,9 +414,10 @@ final class StoreFSM: NSObject {
 
   private (set) var state: StoreState {
     didSet {
-      os_log("new state: %{public}@, old state: %{public}@",
-             log: log, type: .debug,
-             state.description, oldValue.description
+      os_log(
+        "new state: %{public}@, old state: %{public}@",
+        log: log, type: .debug,
+        state.description, oldValue.description
       )
     }
   }
@@ -565,10 +561,7 @@ final class StoreFSM: NSObject {
   /// Designated to **never** prompt subscribers about their expired free trial.
   /// OK, there’s still the rare case, where users subscribed on another device
   /// and are launching the app on an offline unsynchronized device. Thoughts?
-  private func updatedState(
-    after error: ShoppingError,
-    next nextState: StoreState
-  ) -> StoreState {
+  private func updatedState(after error: ShoppingError, next nextState: StoreState) -> StoreState {
     let er: ShoppingError = isReachable() ? error : .offline
     
     delegateQueue.async {
@@ -815,7 +808,6 @@ final class StoreFSM: NSObject {
 // MARK: - SKProductsRequestDelegate
 
 extension StoreFSM: SKProductsRequestDelegate {
-
   func productsRequest(
     _ request: SKProductsRequest,
     didReceive response: SKProductsResponse
@@ -850,7 +842,6 @@ extension StoreFSM: SKProductsRequestDelegate {
 // MARK: - SKPaymentTransactionObserver
 
 extension StoreFSM: SKPaymentTransactionObserver {
-
   private func finish(transaction t: SKPaymentTransaction) {
     os_log("finishing: %@", log: log, type: .debug, t)
     paymentQueue.finishTransaction(t)
@@ -918,7 +909,6 @@ extension StoreFSM: SKPaymentTransactionObserver {
 // MARK: - Shopping
 
 extension StoreFSM: Shopping {
-  
   func online() {
     DispatchQueue.global(qos: .utility).async {
       self.event(.online)
@@ -953,12 +943,15 @@ extension StoreFSM: Shopping {
   var canMakePayments: Bool {
     return SKPaymentQueue.canMakePayments()
   }
+  
+  func restore() {
+    print("** restore")
+  }
 }
 
 // MARK: - Rating
 
 extension StoreFSM: Rating {
-    
   func considerReview() {
     DispatchQueue.global().async {
       self.event(.considerReview)
@@ -981,7 +974,6 @@ extension StoreFSM: Rating {
 // MARK: - Expiring
 
 extension StoreFSM: Expiring {
-  
   func isExpired() -> Bool {
     return sQueue.sync {
       switch state {

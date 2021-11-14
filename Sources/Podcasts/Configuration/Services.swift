@@ -16,7 +16,6 @@ public struct Contact: Decodable {
   public let email: String
   public let github: String
   public let privacy: String
-  public let review: String
 }
 
 struct Service: Equatable, Decodable {
@@ -37,6 +36,7 @@ final class Services: Decodable {
   func service(_ name: String, at version: String) -> Service? {
     services.filter { svc in
       svc.name == name && svc.version == version
-    }.first
+    }
+    .first
   }
 }
