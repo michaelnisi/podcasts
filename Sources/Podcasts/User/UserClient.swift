@@ -15,7 +15,7 @@ import Foundation
 import Ola
 import os.log
 
-private let log = OSLog(subsystem: "ink.codes.podcasts", category: "User")
+private let log = OSLog(subsystem: "ink.codes.podcasts", category: "UserClient")
 
 /// CloudKit client to synchronize user data: queue and subscriptions.
 public class UserClient {
@@ -620,27 +620,27 @@ extension UserClient {
 // MARK: - Serializing Records
 
 extension UserClient {
-  private static func makeQueued(
-    locator: EntryLocator,
-    timestamp: Date,
-    record: CKRecord
-  ) -> Queued {
+  private func makeQueued(locator: EntryLocator, timestamp: Date, record: CKRecord) -> Queued? {
     let iTunes = iTunesItem(from: record, url: locator.url)
+    
     guard
       let v = record.value(forKey: "queuedOwner") as? Int,
       let owner = QueuedOwner.init(rawValue: v) else {
       os_log("unexpected owner: %@", log: log, record)
+        
       return .temporary(locator, timestamp, iTunes)
     }
+    
     switch owner {
     case .nobody, .subscriber:
       return .temporary(locator, timestamp, iTunes)
+      
     case .user:
       return .pinned(locator, timestamp, iTunes)
     }
   }
 
-  private static func makeEntryLocator(record: CKRecord) -> EntryLocator? {
+  func makeEntryLocator(record: CKRecord) -> EntryLocator? {
     guard
       let guid = record.value(forKey: "guid") as? String,
       let url = record.value(forKey: "url") as? String,
@@ -651,8 +651,7 @@ extension UserClient {
     return EntryLocator(url: url, since: since, guid: guid)
   }
   
-  private static func iTunesItem(
-    from record: CKRecord, url: FeedURL) -> ITunesItem? {
+  private func iTunesItem(from record: CKRecord, url: FeedURL) -> ITunesItem? {
     guard
       let img100 = record.value(forKey: "img100") as? String,
       let img30 = record.value(forKey: "img30") as? String,
@@ -673,7 +672,7 @@ extension UserClient {
   }
   
   /// `Synced` from `record`.
-  static func synced(from record: CKRecord) -> Synced? {
+  func synced(from record: CKRecord) -> Synced? {
     let recordID = record.recordID
 
     guard let zoneID = UserZoneID(zoneID: recordID.zoneID) else {
@@ -723,7 +722,9 @@ extension UserClient {
           return nil
         }
         
-        let queued = makeQueued(locator: loc, timestamp: ts, record: record)
+        guard let queued = makeQueued(locator: loc, timestamp: ts, record: record) else {
+          return nil
+        }
    
         let r = RecordMetadata(
           zoneName: recordID.zoneID.zoneName,
@@ -883,8 +884,8 @@ extension UserClient {
 
         // Checking missing zones.
 
-        let notFoundZoneIDs = notFound.compactMap { $0.recordID.zoneID }
-        let userDeletedZoneIDs = userDeleted.compactMap { $0.recordID.zoneID }
+        let notFoundZoneIDs = notFound.map(\.recordID.zoneID)
+        let userDeletedZoneIDs = userDeleted.map(\.recordID.zoneID)
         
         if !userDeletedZoneIDs.isEmpty {
           os_log("user deleted zones: %@", log: log, Set(userDeletedZoneIDs))
@@ -913,8 +914,7 @@ extension UserClient {
               os_log("deleting zombies", log: log, type: .info)
               try self.cache.deleteZombies()
             } catch {
-              os_log("could not delete zombies: %{public}@",
-                     log: log, error as CVarArg)
+              os_log("could not delete zombies: %{public}@", log: log, error as CVarArg)
             }
           }
 
@@ -922,8 +922,7 @@ extension UserClient {
           return cb(operationError)
         }
         
-        os_log("creating missing zones: %@",
-               log: log, type: .info, missingZoneIDs)
+        os_log("creating missing zones: %@", log: log, type: .info, missingZoneIDs)
         
         return self.createZones(with: Array(missingZoneIDs)) { error in
           guard error == nil else {
@@ -946,7 +945,7 @@ extension UserClient {
       if let sr = savedRecords {
         os_log("saved records: %i", log: log, type: .info, sr.count)
         do {
-          let items = sr.compactMap { UserClient.synced(from: $0) }
+          let items = sr.compactMap { self.synced(from: $0) }
           try self.cache.add(synced: items)
         } catch {
           return cb(error)
@@ -993,13 +992,13 @@ extension UserClient {
   private func delete(recordIDs: [CKRecord.ID]) throws {
     os_log("deleting: %i", log: log, type: .info, recordIDs.count)
     
-    try cache.remove(recordNames: recordIDs.map { $0.recordName })
+    try cache.remove(recordNames: recordIDs.map(\.recordName))
   }
   
   private func update(records: [CKRecord]) throws {
     os_log("updating: %i", log: log, type: .info, records.count)
     
-    let items = records.compactMap { UserClient.synced(from: $0) }
+    let items = records.compactMap { synced(from: $0) }
     
     try cache.add(synced: items)
   }
@@ -1166,8 +1165,7 @@ extension UserClient: UserSyncing {
     }
   }
   
-  public func pull(completionHandler:
-    @escaping (_ newData: Bool, _ error: Error?) -> Void) {
+  public func pull(completionHandler: @escaping (_ newData: Bool, _ error: Error?) -> Void) {
     queue.addOperation { [unowned self] in
       os_log("pulling from iCloud", log: log, type: .info)
       

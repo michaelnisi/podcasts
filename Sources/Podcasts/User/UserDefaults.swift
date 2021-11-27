@@ -11,15 +11,15 @@
 
 import Foundation
 
-public extension UserDefaults {
+extension UserDefaults {
   static var automaticDownloadsKey = "automaticDownloads"
   static var discretionaryDownloads = "discretionaryDownloads"
   static var mobileDataStreamingKey = "mobileDataStreaming"
   static var mobileDataDownloadsKey = "mobileDataDownloads"
-
   static var lastUpdateTimeKey = "ink.codes.podest.last-update"
-  static var lastVersionPromptedForReviewKey = "ink.codes.podest.lastVersionPromptedForReview"
+}
 
+public extension UserDefaults {
   var automaticDownloads: Bool {
     bool(forKey: UserDefaults.automaticDownloadsKey)
   }
@@ -45,26 +45,17 @@ public extension UserDefaults {
   func isLastUpdate(outside deadline: TimeInterval = 3600) -> (Double, Bool) {
     let now = Date().timeIntervalSince1970
     
+    return (now, true)
+    
     return (now, now - lastUpdateTime > deadline)
   }
 
-  var lastVersionPromptedForReview: String? {
-    get { string(forKey: UserDefaults.lastVersionPromptedForReviewKey) }
-    set { set(newValue, forKey: UserDefaults.lastVersionPromptedForReviewKey) }
-  }
-
-  static func registerDefaults(_ user: UserDefaults = UserDefaults.standard) {
+  static func registerPodcastsDefaults(_ user: UserDefaults = UserDefaults.standard) {
     user.register(defaults: [
       mobileDataDownloadsKey: false,
       mobileDataStreamingKey: false,
       automaticDownloadsKey: !Podcasts.settings.noDownloading,
       lastUpdateTimeKey: 0,
-      lastVersionPromptedForReviewKey: "0"
     ])
   }
-}
-
-extension UserDefaults {
-  static var statusKey = "ink.codes.podest.status"
-  static var expirationKey = "ink.codes.podest.expiration"
 }

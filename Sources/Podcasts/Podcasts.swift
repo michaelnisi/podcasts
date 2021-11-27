@@ -12,6 +12,7 @@
 import Foundation
 import FeedKit
 import Playback
+import TipTop
 
 let conf: Configuration = {
   try! Configuration(url: Bundle.main.url(forResource: "config", withExtension: "json")!)

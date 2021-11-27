@@ -18,6 +18,7 @@ import Patron
 import Skull
 import os.log
 import Playback
+import TipTop
 
 private let log = OSLog.disabled
 
@@ -257,14 +258,19 @@ class Configuration {
   private lazy var synchronizedQueue: OperationQueue = {
     let queue = OperationQueue()
     queue.maxConcurrentOperationCount = 1
-    queue.qualityOfService = .userInitiated
+    queue.qualityOfService = .utility
     queue.name = "ink.codes.podcasts.Configuration.Sync"
     
     return queue
   }()
   
   func freshUserLibrary() throws -> UserLibrary {
-    UserLibrary(cache: userCache, browser: browser, queue: synchronizedQueue)
+    let queue = OperationQueue()
+    queue.maxConcurrentOperationCount = 1
+    queue.qualityOfService = .userInitiated
+    queue.name = "ink.codes.podcasts.UserLibrary.Sync"
+    
+    return UserLibrary(cache: userCache, browser: browser, queue: queue)
   }
   
   lazy var user: UserLibrary = try! self.freshUserLibrary()
@@ -292,7 +298,7 @@ class Configuration {
     dispatchPrecondition(condition: .onQueue(.main))
     
     let url = Bundle.main.url(forResource: "products", withExtension: "json")!
-    let store = StoreFSM(url: url)
+    let store = Store(url: url)
     
     store.formatDate = { date in
       return StringRepository.string(from: date)

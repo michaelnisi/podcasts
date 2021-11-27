@@ -28,12 +28,13 @@ let package = Package(
     .package(name: "Playback", url: "https://github.com/michaelnisi/playback", from: "12.1.0"),
     .package(name: "FileProxy", url: "https://github.com/michaelnisi/fileproxy", from: "6.0.0"),
     .package(name: "HTMLAttributor", url: "https://github.com/michaelnisi/hattr", from: "6.0.0"),
-    .package(name: "Epic", url: "https://github.com/michaelnisi/epic", from: "1.1.1")
+    .package(name: "Epic", url: "https://github.com/michaelnisi/epic", from: "1.1.1"),
+    .package(name: "TipTop", url: "https://github.com/michaelnisi/tiptop", from: "1.0.0")
   ],
   targets: [
     .target(
       name: "Podcasts",
-      dependencies: ["FeedKit", "Playback", "FileProxy", "HTMLAttributor", "Epic"]),
+      dependencies: ["FeedKit", "Playback", "FileProxy", "HTMLAttributor", "Epic", "TipTop"]),
     .testTarget(
       name: "PodcastsTests",
       dependencies: ["Podcasts"],
