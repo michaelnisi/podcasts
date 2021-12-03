@@ -108,7 +108,7 @@ public protocol UserSyncing {
   ///   - error: An error if something went wrong.
   func pull(completionHandler: @escaping (_ newData: Bool, _ error: Error?) -> Void)
   
-  /// Update iCloud database with local data. Everything, not pushed yet, will
+  /// Updates iCloud database with local data. Everything, not pushed yet, will
   /// be copied to iCloud.
   ///
   /// - Parameters:
@@ -119,4 +119,13 @@ public protocol UserSyncing {
   
   /// Resets the currently in-memory cached account status.
   func resetAccountStatus()
+  
+  /// Pushes after successfully pulling or else fails with an error.
+  ///
+  /// - Parameters:
+  ///   - completionHandler: A block that has no return value and takes the
+  /// following parameters:
+  ///   - newData: `true` if new data has been received.
+  ///   - error: An error object or `nil` if data has been pushed successfully.
+  func synchronize(completionHandler: @escaping (_ newData: Bool, _ error: Error?) -> Void)
 }

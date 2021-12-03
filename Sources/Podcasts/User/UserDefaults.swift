@@ -45,8 +45,6 @@ public extension UserDefaults {
   func isLastUpdate(outside deadline: TimeInterval = 3600) -> (Double, Bool) {
     let now = Date().timeIntervalSince1970
     
-    return (now, true)
-    
     return (now, now - lastUpdateTime > deadline)
   }
 

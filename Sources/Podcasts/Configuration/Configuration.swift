@@ -108,7 +108,7 @@ private func makeFeedRepo(_ conf: Configuration) throws -> FeedRepository {
   let opts = conf.service("production", at: "*")!
   let svc = makeMangerService(options: opts)
   let queue = OperationQueue()
-  queue.qualityOfService = .userInitiated
+  queue.qualityOfService = .default
   
   return FeedRepository(cache: c, svc: svc, queue: queue)
 }

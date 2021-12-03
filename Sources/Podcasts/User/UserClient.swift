@@ -481,8 +481,7 @@ public class UserClient {
       completionHandler(changedZoneIDs, deletedZoneIDs, nil)
     }
     
-    os_log("fetching database changes: %@", log: log, type: .info,
-           String(describing: prev))
+    os_log("fetching database changes: %@", log: log, type: .info, String(describing: prev))
 
     db.add(op)
   }
@@ -1228,6 +1227,20 @@ extension UserClient: UserSyncing {
     }
   }
   
+  public func synchronize(completionHandler: @escaping (_ newData: Bool, _ error: Error?) -> Void) {
+    pull { [unowned self] newData, error in
+      guard error == nil else {
+        completionHandler(false, error)
+        
+        return
+      }
+      
+      push { pushError in
+        completionHandler(newData, error ?? pushError)
+      }
+    }
+  }
+  
   public func resetAccountStatus() {
     accountStatus = nil
   }
@@ -1343,6 +1356,10 @@ extension UserClient {
 
 /// A user client that does nothing.
 class NoUserClient: UserSyncing {
+  func synchronize(completionHandler: @escaping (_ newData: Bool, Error?) -> Void) {
+    completionHandler(false, nil)
+  }
+  
   var isAccountStatusKnown: Bool {
     os_log("claiming account status: no sync", log: log)
     return true
