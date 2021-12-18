@@ -255,15 +255,6 @@ class Configuration {
   
   lazy var userCache = makeUserCache(self)
   
-  private lazy var synchronizedQueue: OperationQueue = {
-    let queue = OperationQueue()
-    queue.maxConcurrentOperationCount = 1
-    queue.qualityOfService = .utility
-    queue.name = "ink.codes.podcasts.Configuration.Sync"
-    
-    return queue
-  }()
-  
   func freshUserLibrary() throws -> UserLibrary {
     let queue = OperationQueue()
     queue.maxConcurrentOperationCount = 1
@@ -285,7 +276,12 @@ class Configuration {
       fatalError("could not init probe: \(host)")
     }
     
-    let client = UserClient(cache: userCache, probe: probe, queue: synchronizedQueue)
+    let queue = OperationQueue()
+    queue.maxConcurrentOperationCount = 1
+    queue.qualityOfService = .utility
+    queue.name = "ink.codes.podcasts.UserClient"
+  
+    let client = UserClient(cache: userCache, probe: probe, queue: queue)
     
     if self.settings.flush {
       client.flush()

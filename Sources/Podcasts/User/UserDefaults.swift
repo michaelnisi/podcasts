@@ -12,11 +12,11 @@
 import Foundation
 
 extension UserDefaults {
-  static var automaticDownloadsKey = "automaticDownloads"
-  static var discretionaryDownloads = "discretionaryDownloads"
-  static var mobileDataStreamingKey = "mobileDataStreaming"
-  static var mobileDataDownloadsKey = "mobileDataDownloads"
-  static var lastUpdateTimeKey = "ink.codes.podest.last-update"
+  static let automaticDownloadsKey = "automaticDownloads"
+  static let discretionaryDownloads = "discretionaryDownloads"
+  static let mobileDataStreamingKey = "mobileDataStreaming"
+  static let mobileDataDownloadsKey = "mobileDataDownloads"
+  static let lastUpdateTimeKey = "ink.codes.podest.last-update"
 }
 
 public extension UserDefaults {
