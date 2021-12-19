@@ -1,3 +1,3 @@
-## 1.0.0 (planned)
+## 1.1.1 (2021-12-19)
 
-Extract core functionality of podcast app into this package.
+Extract podcast app core functionality from Podest into this package.
