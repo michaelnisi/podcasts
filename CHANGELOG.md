@@ -1,4 +1,4 @@
-## 1.1.2 (planned)
+## 1.1.2 (2022-01-01)
 
 Tolerate feeds without images.
 

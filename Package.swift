@@ -24,7 +24,7 @@ let package = Package(
       targets: ["Podcasts"]),
   ],
   dependencies: [
-    .package(name: "FeedKit", url: "https://github.com/michaelnisi/feedkit", from: "18.1.0"),
+    .package(name: "FeedKit", url: "https://github.com/michaelnisi/feedkit", from: "19.0.0"),
     .package(name: "Playback", url: "https://github.com/michaelnisi/playback", from: "12.1.0"),
     .package(name: "FileProxy", url: "https://github.com/michaelnisi/fileproxy", from: "6.0.0"),
     .package(name: "HTMLAttributor", url: "https://github.com/michaelnisi/hattr", from: "6.0.0"),
