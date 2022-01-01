@@ -18,9 +18,9 @@ extension Entry: Imaginable {
       return ImageURLs(
         id: feed.hash,
         title: title,
-        small: feedImage!,
-        medium: feedImage!,
-        large: feedImage!
+        small: feedImage ?? "",
+        medium: feedImage ?? "",
+        large: feedImage ?? ""
       )
     }
     
@@ -40,9 +40,9 @@ extension Feed: Imaginable {
       return ImageURLs(
         id: url.hash,
         title: title,
-        small: image!,
-        medium: image!,
-        large: image!
+        small: image ?? "",
+        medium: image ?? "",
+        large: image ?? ""
       )
     }
     
